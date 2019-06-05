@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun
+		(Tianjin.Xuntong.LTD)
+	-->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+
+	<!-- 添加自提点 -->
+	<Handle UID="addpick">
+		<Operation Sql="INSERT INTO ez_pickstation 
+							(pickid,pickname,lng,lat,address,status)
+						VALUES
+							(:pickid,:pickname,:lng,:lat,:address,:status)" >
+			<Field Sequences="uid_seq">pickid</Field>
+			<Field>pickname</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field>address</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Operation Sql="INSERT INTO ez_pick_school 
+							(
+								pickid,
+								schoolid
+							)
+						VALUES
+							(
+								:pickid,
+								:schoolid
+							)" >
+			<Field OtherOperation="operation1">pickid</Field>
+			<Field>schoolid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 进入编辑自提点页面 -->
+	<Handle UID="goeditpick">
+		<Operation Sql="select * from ez_pickstation where pickid=:pickid" >
+			<Field>pickid</Field>
+		</Operation>
+		
+		<!-- 获取所有学校，和该自提点属不属于这个学校 -->
+		<Operation Sql="SELECT 
+							s.*,
+							CASE
+							WHEN ps.id IS NOT NULL THEN 1
+							ELSE	0
+							END belongschool
+						FROM ez_school s 
+						LEFT JOIN ez_pick_school ps ON s.schoolid=ps.schoolid AND pickid=:pickid
+							" >
+			<Field OtherOperation="operation1">pickid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 编辑自提点 -->
+	<Handle UID="doeditpick">
+		<Operation Sql="Update ez_pickstation set 
+							pickname=:pickname,
+							lng=:lng,
+							lat=:lat,
+							address=:address,
+							status=:status
+						where pickid=:pickid " >
+			<Field>pickid</Field>
+			<Field>pickname</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field>address</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Operation Sql="delete from ez_pick_school where pickid=:pickid" >
+			<Field>pickid</Field>
+		</Operation>
+		
+		<Operation Sql="INSERT INTO ez_pick_school 
+							(
+								pickid,
+								schoolid
+							)
+						VALUES
+							(
+								:pickid,
+								:schoolid
+							)" >
+			<Field>pickid</Field>
+			<Field>schoolid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 删除自提点 -->
+	<Handle UID="deleteeditpick">
+		<Operation Sql="Delete from ez_pickstation 
+						where pickid=:pickid " >
+			<Field>pickid</Field>
+			
+		</Operation>
+		
+		<Operation Sql="delete from ez_pick_school where pickid=:pickid" >
+			<Field>pickid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	
+	<!-- 获取所有学校 -->
+	<Handle UID="getschoollist">
+		<Operation Sql="select * from ez_school" >
+						
+			
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 新增学校 -->
+	<Handle UID="addschool">
+		<Operation Sql="INSERT INTO ez_school 
+							(schoolname,lng,lat,address,status)
+						VALUES
+							(:name,:lng,:lat,:address,:status)" >
+			<Field>name</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field>address</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 进入编辑学校页面 -->
+	<Handle UID="goeditschool">
+		<Operation Sql="select * from ez_school where schoolid=:schoolid" >
+			<Field>schoolid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 编辑学校 -->
+	<Handle UID="doeditschool">
+		<Operation Sql="Update ez_school set 
+							schoolname=:name,
+							lng=:lng,
+							lat=:lat,
+							address=:address,
+							status=:status
+						where schoolid=:schoolid " >
+			<Field>schoolid</Field>
+			<Field>name</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field>address</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 删除学校 -->
+	<Handle UID="deleteschool">
+		<Operation Sql="delete from ez_school where schoolid=:schoolid" >
+			<Field>schoolid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取商品列表 -->
+	<Handle UID="getproductlist">
+		<Operation Sql="select
+								p.*,
+								(
+									select GROUP_CONCAT(f1.name) from ez_product_code pf1 INNER JOIN 
+									ez_fixings f1 ON pf1.code = f1.code
+									WHERE pf1.pid=p.pid AND f1.type=1
+								) tastename,
+								(
+									select GROUP_CONCAT(f1.name) from ez_product_code pf1 INNER JOIN 
+									ez_fixings f1 ON pf1.code = f1.code
+									WHERE pf1.pid=p.pid AND f1.type=2
+								) fixname
+						from tb_product p
+						where p.factoryid = :factoryid;" >
+						
+			<Field SValue="factoryid">factoryid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 添加商品 -->
+	<Handle UID="addproduct">
+		<Operation Sql="INSERT INTO tb_product 
+							(
+								pid,
+								pname,
+								description,
+								intime,
+								fromat,
+								amount,
+								type,
+								factoryid,
+								status
+							)
+						VALUES
+							(	:pid,
+								:pname,
+								:description,
+								unix_timestamp(now()),
+								:fromat,
+								:amount,
+								:type,
+								:factoryid,
+								:status
+							)" >
+			<Field Sequences="uid_seq">pid</Field>
+			<Field>pname</Field>
+			<Field>description</Field>
+			<Field>fromat</Field>
+			<Field>amount</Field>
+			<Field>type</Field>
+			<Field SValue="factoryid">factoryid</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Operation Sql="INSERT INTO ez_product_code 
+							(
+								pid,
+								code,
+								intime,
+								sort
+							)
+						VALUES
+							(
+								:pid,
+								:tastcode,
+								unix_timestamp(now()),
+								:sort
+							)" >
+			<Field OtherOperation="operation1">pid</Field>
+			<Field>tastcode</Field>
+			<Field DefaultValue="1">sort</Field>
+		</Operation>
+		
+		
+		<Operation Sql="INSERT INTO ez_product_code 
+							(
+								pid,
+								code,
+								intime,
+								sort
+							)
+						VALUES
+							(
+								:pid,
+								:fixcode,
+								unix_timestamp(now()),
+								:sort
+							)" >
+			<Field OtherOperation="operation1">pid</Field>
+			<Field>fixcode</Field>
+			<Field DefaultValue="1">sort</Field>
+		</Operation>
+		
+		<Operation Sql="delete from ez_product_code 
+							where pid=:pid and (code is null or code='')" >
+			<Field OtherOperation="operation1">pid</Field>
+		</Operation>
+		
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 去编辑商品 -->
+	<Handle UID="goeditproduct">
+		<Operation Sql="select * from tb_product p WHERE p.pid = :productid" >
+						
+			<Field>productid</Field>
+		</Operation>
+		
+		<Operation Sql="SELECT 
+							f.*,
+							CASE
+									WHEN pf.pid IS NOT NULL THEN 1
+									ELSE	0
+									END belongproduct
+						 FROM ez_fixings f
+							LEFT JOIN ez_product_code pf on pf.code = f.code AND pf.pid=:productid
+						WHERE f.type = 1 AND f.factoryid=:factoryid;" >
+						
+			<Field>productid</Field>
+			<Field SValue="factoryid">factoryid</Field>
+		</Operation>
+		
+		
+		<Operation Sql="SELECT 
+							f.*,
+							CASE
+									WHEN pf.pid IS NOT NULL THEN 1
+									ELSE	0
+									END belongproduct
+						 FROM ez_fixings f
+							LEFT JOIN ez_product_code pf on pf.code = f.code AND pf.pid=:productid
+						WHERE f.type = 2 AND f.factoryid=:factoryid;" >
+						
+			<Field>productid</Field>
+			<Field SValue="factoryid">factoryid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 提交编辑商品 -->
+	<Handle UID="doeditproduct">
+		<Operation Sql="update tb_product set
+								pname=:pname,
+								description=:description,
+								fromat=:fromat,
+								amount=:amount,
+								type=:type,
+								status=:status
+						where pid=:pid"
+							>
+			<Field>pid</Field>
+			<Field>pname</Field>
+			<Field>description</Field>
+			<Field>fromat</Field>
+			<Field>amount</Field>
+			<Field>type</Field>
+			<Field DefaultValue="1">status</Field>
+		</Operation>
+		
+		<Operation Sql="delete from ez_product_code 
+							where pid=:pid" >
+			<Field OtherOperation="operation1">pid</Field>
+		</Operation>
+		
+		
+		
+		<Operation Sql="INSERT INTO ez_product_code 
+							(
+								pid,
+								code,
+								intime,
+								sort
+							)
+						VALUES
+							(
+								:pid,
+								:tastcode,
+								unix_timestamp(now()),
+								:sort
+							)" >
+			<Field OtherOperation="operation1">pid</Field>
+			<Field>tastcode</Field>
+			<Field DefaultValue="1">sort</Field>
+		</Operation>
+		
+		
+		<Operation Sql="INSERT INTO ez_product_code 
+							(
+								pid,
+								code,
+								intime,
+								sort
+							)
+						VALUES
+							(
+								:pid,
+								:fixcode,
+								unix_timestamp(now()),
+								:sort
+							)" >
+			<Field OtherOperation="operation1">pid</Field>
+			<Field>fixcode</Field>
+			<Field DefaultValue="1">sort</Field>
+		</Operation>
+		
+		<Operation Sql="delete from ez_product_code 
+							where pid=:pid and (code is null or code='')" >
+			<Field OtherOperation="operation1">pid</Field>
+		</Operation>
+		
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 删除商品 -->
+	<Handle UID="deleteproduct">
+		<Operation Sql="delete from tb_product
+							where pid=:pid">
+			<Field>pid</Field>
+		</Operation>
+		
+		<Operation Sql="delete from ez_product_code 
+							where pid=:pid" >
+			<Field OtherOperation="operation1">pid</Field>
+		</Operation>
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取工厂下的口味或配菜 -->
+	<Handle UID="getfixlist">
+		<Operation Sql="select * from ez_fixings where factoryid=:factoryid and type=:type " >
+			<Field SValue="factoryid">factoryid</Field>
+			<Field >type</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 添加口味或配菜 -->
+	<Handle UID="addfixing">
+		<Operation Sql="INSERT INTO ez_fixings
+					(
+						name,
+						amount,
+						code,
+						sort,
+						remark,
+						type,
+						factoryid
+					) VALUES
+					(
+						:name,
+						:amount,
+						:code,
+						:sort,
+						:remark,
+						:type,
+						:factoryid
+					) " >
+			<Field>name</Field>
+			<Field>amount</Field>
+			<Field Sequences="fix_code">code</Field>
+			<Field>sort</Field>
+			<Field>remark</Field>
+			<Field>type</Field>
+			<Field SValue="factoryid">factoryid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 去编辑单个口味、配菜 -->
+	<Handle UID="getfix">
+		<Operation Sql="select * from ez_fixings where factoryid=:factoryid and id=:id " >
+			<Field SValue="factoryid">factoryid</Field>
+			<Field >id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 去编辑单个口味、配菜 -->
+	<Handle UID="doupdatefix">
+		<Operation Sql="update ez_fixings set
+							name=:name,
+							amount=:amount,
+							sort=:sort,
+							remark=:remark
+						where id=:id " >
+			<Field>name</Field>
+			<Field>amount</Field>
+			<Field>sort</Field>
+			<Field>remark</Field>
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+</Content>

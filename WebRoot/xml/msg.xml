@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+
+	<Handle UID="getmsglist">
+
+		<Operation Sql="select content,msgid,url,carid from msg where acceptor=:pid and status='0'">
+		         <Field SValue="pid">pid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/meg_array.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="putstatus">
+
+		<Operation Sql="update msg set status='1' where msgid=:msgid">
+		        
+		         <Field>msgid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/ajaxsuccess.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="dodelete">
+
+		<Operation Sql="update msg set status='1' where carid=:carid">
+		        
+		         <Field>carid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/ajaxsuccess.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="getcarinfo">
+<Operation
+			Sql="select a.carid,a.carnumber,getcodenamebyid(a.maker) maker,getcodenamebyid(a.brand) brand,getcodenamebyid(a.model) model,a.stype,to_char(to_date(a.firstdate,'yyyy-mm-dd'),'yyyy-mm') firstdate,a.licenseplates,a.motorid,a.framenumber,a.status,a.takecartime,a.transfertime 
+from carinfo a where a.carid =:carid ">
+
+			<Field>carid</Field>
+		</Operation>
+
+
+		<Operation Sql="select a.carid,getcodenamebyid(a.maker) maker,b.otherprice,b.prices,b.register,getcodenamebyid(a.brand) brand,getcodenamebyid(a.model) model,b.accidenttime,b.stopaddr,getcodenamebyid(b.company) company,getcodenamebyid(b.companychild) companychild,b.brokeninfo,b.framebroken,getcodenamebyid(b.reponsibility) reponsibility,b.linkman,b.othercar,b.otherinfo,b.othercompany,getcodenamebyid(b.injury) injury,knockplace,b.accidentdisc,getcodenamebyid(b.damagetype) damagetype,b.insuredsum,b.damageprice 
+							from carinfo a,carinsurance b 
+							where a.carid = b.carid 
+							and a.carid =:carid ">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 2 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='1' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 3 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='2' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 4 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='3' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 5 -->
+		<Operation
+			Sql="select a.operation, getcodenamebyid(a.businesstype) businesstype, a.carid, a.imgpath, a.pid, a.intime,concat(org.orgname||'        ',e.username) username from business a join employee_info e on a.pid=e.pid join org on org.orgid=e.dept and carid=:carid">
+			<Field>carid</Field>
+		</Operation>
+		
+		<!-- 6 -->
+		<Operation Sql="select date_to_char(sysdate,'6') intime from dual">
+		</Operation>
+
+		<!-- 7 -->
+		<Operation Sql="select * from employee_info where pid=:pid">
+			<Field SValue="pid">pid</Field>
+		</Operation>
+
+		<!-- 8 -->
+		<Operation
+			Sql="select carid,newcarprice,twohandprice,repairprice,fitting,time_charge,td_profit,client_profit,other_fee,final_price,car_description ,pid,checktime,safetyprice,mention,engine,transmission,dashboard,control_panel,main_airbag,ballonets,harness,pc_board,owner,nature,s_configuration,undetected
+		from carcheck 
+		where carid =:carid ">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 9 -->
+		<Operation
+			Sql="select safetyprice from carcheck 
+where carid =:carid ">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 10 -->
+		<Operation
+			Sql="select (select orgname from org where orgid=b.dept) deptname,nvl(b.username,(select ename from tdcara.tb_employee t where t.pid=s.userid)) username,s.* from employee_info b right join(
+
+select userid,intime,operation,remark,
+(select t.operation from BUSINESS t where t.carid=a.relatedid  and t.intime=a.intime) operation2  ,
+(select getcodenamebyid(t.businesstype) from BUSINESS t where t.carid=a.relatedid  and t.intime=a.intime) businesstype  ,
+(select t.imgpath from BUSINESS t where t.carid=a.relatedid  and t.intime=a.intime) imgpath
+from olog a where relatedid=:carid) s on b.pid=s.userid  order by s.intime desc " >
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 下载查看报价11-->
+		<Operation
+			Sql="select imgpath 
+from carimages 
+where carid =:carid 
+and imgtype = '4' ">
+			<Field>carid</Field>
+		</Operation>
+		
+		<!-- 下载查看委托函12 -->
+		<Operation
+			Sql="select carid, imgpath, remark, date_to_char(intime,'5') intime from entrust where carid=:carid order by intime desc">
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 13 -->
+		<Operation
+			Sql="select getusernamebyid(b.userid) username,getauctiontiltebyid(b.auctionid) auctiontilte,getauctionbidtimeabyid(b.auctionid) auctionbidtimea,b.userid,date_to_char(b.intime,'6') intime,getusermoneybyid(b.userid) usermoney,b.price 
+from tb_bidinfo b 
+where b.active = '1' 
+and carid =:carid " >
+			<Field>carid</Field>
+		</Operation>
+		
+		<!-- 14 -->
+		<Operation
+			Sql="select p.*,date_to_char(p.intime,'6') intime6,getcodenamebyid(paytype) paytypename,getpnamebypid(p.pid) pname,getporgnamebypid(p.pid) orgname  
+from tb_payinfo p 
+where carid =:carid 
+and ptype = '1' 
+order by intime6 desc " >
+			<Field>carid</Field>
+		</Operation>
+
+		<!-- 15 -->
+		<Operation Sql="select p.*,date_to_char(p.intime,'6') intime6,getcodenamebyid(paytype) paytypename,
+			getpnamebypid(p.pid) pname,getporgnamebypid(p.pid) orgname 
+			from tb_payinfo p 
+			where ptype = '2' 
+			and carid =:carid 
+			order by intime6 desc ">
+			<Field>carid</Field>
+		</Operation>
+		
+		<!-- 16 -->
+		<Operation Sql="select 
+		(nvl((select sum(paymoney) from tb_payinfo where carid =:carid and paytype = '11002'),0) + 
+		nvl((select sum(paymoney) from tb_payinfo where carid =:carid and paytype = '11001'),0)) sumpay 
+		from dual ">
+			<Field>carid</Field>
+		</Operation>
+		<!-- 17 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='7' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+		<!-- 18 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='8' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+		<!-- 19 -->
+		<Operation
+			Sql="select carid, imgpath, imgtype, intime, pid from carimages where imgtype='9' and carid=:carid ;">
+			<Field>carid</Field>
+		</Operation>
+		<!-- 20 -->
+		<Operation Sql="select imgpath from carimages where imgtype = '10' and carid = :carid " >
+			<Field>carid</Field>
+		</Operation>
+		<Operation Sql="select imgpath from carimages where imgtype = '6' and carid = :carid " >
+			<Field>carid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/carinfoshow.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+ </Content>

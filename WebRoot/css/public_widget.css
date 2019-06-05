@@ -1,0 +1,113 @@
+@charset "utf-8";
+/*控件样式定义 */
+/******************************搜索*******************************/
+.sea_con{
+	
+	
+	
+	}
+.search_body{
+	width:242px;
+	height:auto;
+	margin:0 auto;
+	min-height:600px;
+	background:#E1F0FD;
+	}
+.f_left{
+	float:left;
+	}
+.line{
+	width:100%;
+	height:20px;
+	background:#E1F0FD;
+	}
+.sea_top{
+	width:99%;
+	margin-bottom:20px;
+	height:50px;
+	border:1px solid #F6F6F6;
+	background:#FFF;
+	}
+.hot_tyle{
+	background: #fafafa;
+	padding: 8px 0;
+	width: 100%;
+	overflow: hidden;
+	border-bottom:1px solid #DFDFDF;
+	}
+	
+	
+.sea_left{
+	width:30px;
+	float:left
+	height:75%;
+	border-right:1px solid #DFDFDF;
+	background:#FFF;
+	}
+.a_m{
+	height:100%;
+	}
+.code0{
+	display:block;
+	width:30px;
+	height:20px;
+	float:none;
+	text-align:center;
+	cursor:pointer;
+	}
+.code0 .up_li em{
+	border-bottom: 1px solid #dddddd;
+	top: 0px;
+	bottom: auto;
+	background: url("../images/arrow.png") no-repeat -32px -42px;
+	}
+
+.code0 .down_li em{
+	background: url("../images/arrow.png") no-repeat -32px 8px;
+	}
+
+.bg_org{
+	background:#43B8EE;
+	border-right:1px solid #43B8EE;
+	color:#FFF;
+	border:none;
+	}
+ul.car_type{
+	width:210px;
+	float:left;
+	height:98%; 
+	overflow: scroll;
+	list-style:none;
+	}
+ul.car_type li{
+	padding:2px;
+	margin:2px;
+	float:none;
+	border-bottom:1px solid #DFDFDF;
+	line-height:55px;
+	cursor:pointer;
+	}
+ul.car_type li img{
+	float:left;
+	width:42px;
+	height:42px;
+	margin-right:3px;
+	}
+.sea_right{
+	width:242px;
+	height:320px;
+	overflow:hidden;
+	min-height:300px;
+	border-color:#DFDFDF;
+	border-width:1px;
+	border-style:solid;
+	background:#FFF;
+	
+	}
+.box {
+	overflow: hidden;
+	position:absolute;
+	z-index: 200;
+	box-shadow: 0 4px 10px rgba(0,0,0,.35);
+	-webkit-transition: -webkit-transform ease 150ms, box-shadow ease 200ms, z-index ease 150ms;
+}

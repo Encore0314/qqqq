@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun
+		(Tianjin.Xuntong.LTD)
+	-->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+
+	<!-- 根据学校获取自提点 -->
+	<Handle UID="getpick">
+		<Operation Sql="SELECT 
+							p.*,
+							(
+								SELECT GROUP_CONCAT(s1.schoolname) FROM ez_pick_school ps1 INNER JOIN ez_school s1 ON ps1.schoolid = s1.schoolid
+								WHERE ps1.pickid = p.pickid GROUP BY ps1.pickid
+							) belongschool
+		 FROM ez_pickstation p 
+		INNER JOIN ez_pick_school ps ON p.pickid=ps.pickid
+		where :schoolid and :pickname and :status group by p.pickid" >
+			
+			<Field QueryValue="ps.schoolid=:schoolid">schoolid</Field>
+			<Field QueryValue="p.pickname like format_like(:pickname)">pickname</Field>
+			<Field QueryValue="p.status=:status">status</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 商品列表 -->
+	<Handle UID="getproductlist">
+		<Operation Sql="SELECT 
+								p.*,
+								f_getproduct_num(p.pid) number,
+								1 cartnum
+						FROM tb_product p
+						WHERE p.factoryid = f_getfactoryid(:schoolid,:pickid);
+						AND p.status=1;" >
+			
+			<Field >schoolid</Field>
+			<Field >pickid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 获取商品口味、配菜 -->
+	<Handle UID="getfixbyprodect">
+		<Operation Sql="SELECT pc.intime,fx.*,false as bOn FROM ez_product_code pc
+		INNER JOIN ez_fixings fx ON pc.code=fx.code
+			WHERE pc.pid = :productid AND fx.type = :type
+			ORDER BY pc.sort" >
+			
+			<Field >productid</Field>
+			<Field DefaultValue="1">type</Field>
+		</Operation>
+		
+		
+		<Operation Sql="SELECT 
+								fix.*,
+								f_getfix_num(fix.code) number
+							FROM ez_fixings fix 
+									INNER JOIN ez_product_code pc ON 
+									fix.code = pc.code AND pc.pid = :productid
+							WHERE 
+									fix.type=2
+						ORDER BY fix.sort" >
+			
+			<Field >productid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取配菜库存 -->
+	<Handle UID="getfixnumber">
+	
+		<Operation Sql="SELECT 
+								fix.*,
+								f_getfix_num(fix.code) number
+							FROM ez_fixings fix
+							WHERE 
+									fix.type=2
+						ORDER BY fix.sort" >
+			
+			
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<!-- 添加商品到购物车 -->
+	<Handle UID="addcart">
+		<Operation Sql="call p_addcart(:schoolid,'',:productid,:openid,:taste,:dishes);" >
+				<Field >schoolid</Field>
+				<Field >pickid</Field>
+				<Field >productid</Field>
+				<Field SValue="openid">openid</Field>
+				<Field >taste</Field>
+				<Field >dishes</Field>
+				
+		</Operation>
+		
+		
+		<Operation Sql="CALL p_getusercart(:schoolid,:openid);" >
+				<Field >schoolid</Field>
+				<Field SValue="openid">openid</Field>
+		</Operation>
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 操作购物车数量 -->
+	<Handle UID="changecartnum">
+		<Operation Sql="call p_changecartnum(:cartid,:number)" >
+			
+			<Field >cartid</Field>
+			<Field >number</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 计算离用户坐标最近学校 -->
+	<Handle UID="getlatestschool">
+		
+		<Operation Sql="SELECT * FROM ez_school s
+			WHERE s.status =1
+		ORDER BY f_locationrange(:lng,:lat,s.lng,s.lat) ASC
+		" >
+			
+			<Field >lng</Field>
+			<Field >lat</Field>
+		</Operation>
+		
+		<Operation Sql="select :openid from dual">
+			<Field SValue="openid">openid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取用户当前购物车 -->
+	<Handle UID="getusercart">
+		
+		<Operation Sql="CALL p_getusercart(:schoolid,:openid);
+		" >
+			
+			<Field >schoolid</Field>
+			<Field SValue="openid">openid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 用户下单 -->
+	<Handle UID="doaddorder">
+		
+		<Operation Sql="call p_addorder(:schoolid,:pickid,:openid,:addressid,:remarks);" >
+			
+			<Field >schoolid</Field>
+			<Field >pickid</Field>
+			<Field SValue="openid">openid</Field>
+			<Field >addressid</Field>
+			<Field >remarks</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 获取用户收货地址 -->
+	<Handle UID="getuseraddress">
+		<Operation Sql="select * from ez_address where openid=:openid order by ismain desc;" >
+			<Field SValue="openid">openid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 添加地址 -->
+	<Handle UID="addaddress">
+		<Operation Sql="update ez_address set ismain=0 where openid=:openid;" >
+			<Field SValue="openid">openid</Field>
+		</Operation>
+	
+		<Operation Sql="INSERT INTO ez_address 
+						(
+							openid,
+							phone,
+							address,
+							mapaddress,
+							lng,
+							lat,
+							schoolid,
+							name,
+							ismain
+						)
+						VALUES
+						(
+							:openid,
+							:phone,
+							:address,
+							:mapaddress,
+							:lng,
+							:lat,
+							:schoolid,
+							:name,
+							1
+						)" >
+			
+			<Field SValue="openid">openid</Field>
+			<Field >phone</Field>
+			<Field >address</Field>
+			<Field >mapaddress</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field >schoolid</Field>
+			<Field >name</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 去修改地址 -->
+	<Handle UID="goupdateaddress">
+		<Operation Sql="select * from ez_address where id=:addressid and openid=:openid
+					">
+			
+			<Field SValue="openid">openid</Field>
+			<Field >addressid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 修改地址 -->
+	<Handle UID="doupdateaddress">
+		<Operation Sql="update ez_address set 
+							phone=:phone,
+							address=:address,
+							mapaddress=:mapaddress,
+							lng=:lng,
+							lat=:lat,
+							schoolid=:schoolid,
+							name=:name
+						where id=:addressid and openid=:openid
+					">
+			
+			<Field SValue="openid">openid</Field>
+			<Field >addressid</Field>
+			<Field >phone</Field>
+			<Field >address</Field>
+			<Field >mapaddress</Field>
+			<Field DefaultValue="0">lng</Field>
+			<Field DefaultValue="0">lat</Field>
+			<Field >schoolid</Field>
+			<Field >name</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 删除地址 -->
+	<Handle UID="deleteaddress">
+		<Operation Sql="delete from ez_address where id=:addressid and openid=:openid
+					">
+			
+			<Field SValue="openid">openid</Field>
+			<Field >addressid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 设置默认收货地址 -->
+	<Handle UID="setmainaddress">
+		<Operation Sql="update ez_address set ismain=0 where openid=:openid;" >
+			<Field SValue="openid">openid</Field>
+		</Operation>
+	
+		<Operation Sql="update ez_address set ismain=1 where id=:addressid and openid=:openid;" >
+			<Field SValue="openid">openid</Field>
+			<Field>addressid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 获取用户订单（分页）  -->
+	<Handle UID="getuserorders">
+	
+		<Operation Sql="select * from ( 
+							SELECT 
+								o.*,
+								oc.pname,
+								oc.fromat,
+								oc.tastename,
+								oc.fixingname,
+								(SELECT statusname FROM ez_order_statusname WHERE
+								statustype=o.status AND sendtype=o.type AND systype=:systype ) statusname
+							FROM ez_order o 
+									INNER JOIN v_ordercart oc ON o.ordernumber = oc.ordernumber
+							WHERE o.openid=:openid
+							and oc.cartid=(select min(cartid) from v_ordercart where ordernumber=oc.ordernumber)
+						) a order by intime desc 
+					">
+			<Field SValue="openid">openid</Field>
+			<Field>systype</Field>
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="5">limit</Field>
+			
+		</Operation>
+	
+		<Operation Sql="SELECT count(1) cou FROM ez_order o WHERE openid = :openid ORDER BY intime DESC
+					">
+			
+			<Field SValue="openid">openid</Field>
+			
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 用户订单详情 -->
+<Handle UID="userorderdetail">
+		<Operation Sql="SELECT
+							o.*,
+							a.name,
+							a.phone,
+							a.address address,
+							a.mapaddress,
+							p.pickname,
+							p.address pickaddress,
+							(SELECT statusname FROM ez_order_statusname WHERE
+								statustype=o.status AND sendtype=o.type AND systype=:systype ) statusname
+						FROM
+							ez_order o
+						LEFT JOIN ez_address a ON o.addressid = a.id
+						LEFT JOIN ez_pickstation p ON o.pickid = p.pickid
+						WHERE orderid = :orderid"  >
+            
+			<Field >orderid</Field>
+			<Field>systype</Field>
+		</Operation>
+		<Operation Sql="select 
+							o.*,
+							p.pname,
+							p.fromat,
+							f_getfixingnamebycode(taste) tastename,
+							(select  GROUP_CONCAT((select name from ez_fixings where code=c.fixcode) SEPARATOR ',') aa  from ez_cart_order_fixing c  where cartid=o.cartid order by fixcode) fixingname
+						 from 
+						 	ez_cart_order o INNER JOIN 
+						 	tb_product p on o.pid = p.pid
+						 where  o.ordernumber=f_getordenumbyorderid(:orderid)"  >
+          <Field >orderid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+</Content>

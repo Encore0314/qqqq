@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by wenyongjun (xuntong software) -->
+<!ELEMENT Content (Handle+)>
+<!ELEMENT Handle (Operation+, Other)>
+<!ATTLIST Handle
+	UID ID #REQUIRED
+>
+<!ELEMENT Operation (Field*)>
+<!ATTLIST Operation
+	Sql CDATA #REQUIRED
+	ExpectRows CDATA #IMPLIED
+	ExpectFaultMsg CDATA #IMPLIED
+>
+<!ELEMENT Field (#PCDATA)>
+<!ATTLIST Field
+	Sequences CDATA #IMPLIED
+	DefaultValue CDATA #IMPLIED
+	Decrypt CDATA #IMPLIED
+	Encrypt CDATA #IMPLIED
+	QueryValue CDATA #IMPLIED
+	File CDATA #IMPLIED	
+	SValue CDATA #IMPLIED
+	OtherOperation CDATA #IMPLIED
+	Check CDATA #IMPLIED			
+>
+<!ELEMENT Other (SuccessMsg?, FaultMsg?, SuccessPage, FaultPage)>
+<!ELEMENT SuccessMsg (#PCDATA)>
+<!ELEMENT FaultMsg (#PCDATA)>
+<!ELEMENT SuccessPage (Url, Param*)>
+<!ATTLIST SuccessPage
+	Target CDATA "location"
+>
+<!ELEMENT FaultPage (Url, Param*)>
+<!ATTLIST FaultPage
+	Target CDATA "location"
+>
+<!ELEMENT Url (#PCDATA)>
+<!ELEMENT Param (#PCDATA)>
+<!ATTLIST Param
+	Name CDATA #IMPLIED
+	Operation CDATA #IMPLIED
+	ConstValue CDATA #IMPLIED
+>

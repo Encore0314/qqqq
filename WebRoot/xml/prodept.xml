@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+	
+	<!-- 检查用户名是否可用 -->
+	<Handle UID="checkeduserid">
+
+		<Operation Sql="select count(1) cou from employee_info where userid=:userid">
+		         <Field>userid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+
+	
+	<!-- 用户重置密码 -->
+	<Handle UID="resetpass">
+
+		<Operation Sql="update employee_info set passwords=:passwords where userid=:userid;">
+				 <Field>userid</Field>
+		         <Field Encrypt="true">passwords</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 指标属性列表 -->
+	<Handle UID="getperformlist">
+
+		<Operation Sql="SELECT 
+								p.*,
+								GROUP_CONCAT(pd.day) day
+							FROM tb_norm_property p LEFT JOIN tb_norm_property_date pd ON p.id=pd.pid
+							WHERE :pname
+							GROUP BY p.id;">
+							
+			<Field QueryValue="p.pname like format_like(:pname)">pname</Field>
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 添加指标属性 -->
+	<Handle UID="addperform">
+
+		<Operation Sql="INSERT INTO tb_norm_property
+				(
+					id,
+					pname,
+					type,
+					intime
+				)
+				VALUES
+				(
+					:proid,
+					:pname,
+					:type,
+					NOW()
+				);">
+				
+			<Field Sequences="proid">proid</Field>
+            <Field>pname</Field>
+            <Field>type</Field>
+		</Operation>
+		
+		<Operation Sql="INSERT INTO tb_norm_property_date
+						(
+							id,
+							pid,
+							day
+						)
+						VALUES
+						(
+							:pdid,
+							:proid,
+							:day
+						);">
+				
+			<Field Sequences="pdid">pdid</Field>
+            <Field OtherOperation="operation1">proid</Field>
+            <Field>day</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标属性详情 -->
+	<Handle UID="getperform">
+
+		<Operation Sql="SELECT * FROM tb_norm_property where id=:id;">
+		
+			<Field>id</Field>
+		</Operation>
+		
+		<Operation Sql="SELECT * FROM tb_norm_property_date where pid=:id;">
+		
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 修改指标属性 -->
+	<Handle UID="updateperform">
+
+		<Operation Sql="update tb_norm_property set
+							pname=:pname,
+							type=:type
+						where id=:id;">
+				
+			<Field>id</Field>
+            <Field>pname</Field>
+            <Field>type</Field>
+		</Operation>
+		
+		<Operation Sql="delete FROM tb_norm_property_date where pid=:id;">
+		
+			<Field>id</Field>
+		</Operation>
+		
+		<Operation Sql="INSERT INTO tb_norm_property_date
+						(
+							id,
+							pid,
+							day
+						)
+						VALUES
+						(
+							:pdid,
+							:id,
+							:day
+						);">
+				
+			<Field Sequences="pdid">pdid</Field>
+            <Field>id</Field>
+            <Field>day</Field>
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 删除指标属性 -->
+	<Handle UID="deleteperform">
+
+		<Operation Sql="delete from tb_norm_property where id=:id;">
+				
+			<Field>id</Field>
+		</Operation>
+		
+		<Operation Sql="delete FROM tb_norm_property_date where pid=:id;">
+		
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标填报（考核对象列表） -->
+	<Handle UID="gettaskorglist">
+
+		<Operation Sql="call p_gettaskvalue(:type,:aorgid,:borgid,:propertyid,:year,:date,:status,:norm_ntype,:user_orgid)">
+				
+			<Field>type</Field>
+			<Field DefaultValue="">aorgid</Field>
+			<Field DefaultValue="">borgid</Field>
+			<Field>propertyid</Field>
+			<Field>year</Field>
+			<Field>date</Field>
+			<Field DefaultValue="">status</Field>
+			<Field>norm_ntype</Field>
+			<Field SValue="dept">user_orgid</Field>	
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标填报最新截止日期 -->
+	<Handle UID="gettaskmaxdate">
+
+		<Operation Sql="SELECT max(date(time)) maxdate FROM tb_property_task_value WHERE propertyid=:propertyid">
+				
+			<Field>propertyid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标填报（某个对象的填报列表） -->
+	<Handle UID="getabtaskorglist">
+
+		<Operation Sql="SELECT 
+							*,
+							case
+								when status='1' then '已完成'
+								when savetime is null and status='0' then '未填写'
+								when savetime is not null and status='0' then '草稿'
+							end statusname,
+							(select orgname from org where orgid=aorgid) aorgname,
+							(select orgname from org where orgid=borgid) borgname
+						FROM tb_property_task_value WHERE 
+						:aorgid AND borgid=:borgid
+						and propertyid=:propertyid
+						and :norm_ntype
+						and f_check_taskvalue(id,:user_orgid)
+						GROUP BY time">
+				
+				<Field QueryValue="aorgid=:aorgid">aorgid</Field>
+				<Field>borgid</Field>
+				<Field>propertyid</Field>
+				<Field QueryValue=" (select ntype from tb_norm where id=normid) = :norm_ntype ">norm_ntype</Field>
+				<Field SValue="dept">user_orgid</Field>	
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标填报（某个对象单次的填报列表） -->
+	<Handle UID="getabtaskorgone">
+
+		<Operation Sql="SELECT 
+							tv.*,
+							(select orgname from org where orgid=tv.aorgid) aorgname,
+							(select orgname from org where orgid=tv.borgid) borgname,
+							(select ntype from tb_norm where id=tv.normid) ntype,
+							(SELECT code_name FROM tb_codeinfo WHERE code_id=norm.nclassify) nclassifyname,
+							(select GROUP_CONCAT(fname) FROM tb_file WHERE mainid=tv.id AND ftype='jxkh') oldFileName,
+							(select GROUP_CONCAT(furl) FROM tb_file WHERE mainid=tv.id AND ftype='jxkh') newFileUrl,
+							norm.nname,
+							norm.nvalue,
+							norm.ntext,
+							cast(
+								cast(
+									ROUND(	
+									  IFNULL(
+										(select count(1) from tb_project pro INNER JOIN tb_proj_progress pp on pro.id=pp.pid
+										WHERE pro.nid=norm.id AND pp.pgvalue='100')/
+										(select count(1) from tb_project where nid=norm.id)*100
+									  ,0
+									  )
+								   ,2)
+								as decimal(9,2))
+							as char(10)) n_process
+						FROM tb_property_task_value tv INNER JOIN tb_norm norm ON tv.normid=norm.id WHERE 
+						:aorgid AND tv.borgid=:borgid
+						and tv.propertyid=:propertyid 
+						and :norm_ntype
+						and tv.time=:time and f_check_taskvalue(tv.id,:user_orgid) ">
+				
+				<Field QueryValue="tv.aorgid=:aorgid">aorgid</Field>
+				<Field>borgid</Field>
+				<Field>propertyid</Field>
+				<Field>time</Field>
+				<Field QueryValue=" (select ntype from tb_norm where id=tv.normid) = :norm_ntype ">norm_ntype</Field>
+				<Field SValue="dept">user_orgid</Field>	
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 指标填报（文件获取） -->
+	<Handle UID="getabtaskorgfile">
+
+		<Operation Sql="select * FROM tb_file WHERE mainid=:taskid AND ftype='jxkh'">
+				
+				<Field>taskid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 指标填报 -->
+	<Handle UID="updatetask">
+
+		<Operation Sql="update tb_property_task_value SET
+								score=:score,
+								remark=:remark,
+								status=:status,
+								savetime=DATE_FORMAT(NOW(),'%Y-%m-%d')
+						WHERE id=:taskid">
+				
+				<Field>score</Field>
+				<Field>remark</Field>
+				<Field>status</Field>
+				<Field>taskid</Field>
+		</Operation>
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:taskid and ftype='jxkh' ">
+			<Field>taskid</Field>
+		</Operation>
+		
+		<Operation
+			Sql="insert into tb_file 
+					(
+						fname,
+						furl,
+						mainid,
+						ftype,
+						intime
+					) values
+					(
+						:oldFileName,
+						:newFileUrl,
+						:taskid,
+						'jxkh',
+						NOW()
+					)">
+			<Field>taskid</Field>
+			<Field>oldFileName</Field>
+			<Field>newFileUrl</Field>
+		</Operation>
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:taskid and ftype='jxkh' and (furl is null or furl='') ">
+			<Field>taskid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 反向考核（单次考核列表） -->
+	<Handle UID="gettaskrevlist">
+
+		<Operation Sql="SELECT 
+							*,
+							(select orgname from org where orgid=aorgid) aorgname,
+							case
+								when status='1' then '已完成'
+								when savetime is null and status='0' then '未填写'
+								when savetime is not null and status='0' then '草稿'
+							end statusname
+						FROM tb_property_task_reverse WHERE 
+						:year AND
+						f_check_org_reverse(aorgid,:user_orgid)
+						and 
+							case :stype when '1' then
+								(type='1' or type='2')
+							else 
+								type='3'
+							end							
+						GROUP BY aorgid,time
+						order by date(time) desc">
+				
+				<Field QueryValue="substring(time,1,4)=:year">year</Field>
+				<Field SValue="dept">user_orgid</Field>
+				<Field>stype</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 反向考核（单次考核详情） -->
+	<Handle UID="gettaskrevdetail">
+
+		<Operation Sql="SELECT 
+							tv.*,
+							(select orgname from org where orgid=aorgid) aorgname,
+							(select orgname from org where orgid=borgid) borgname
+						FROM tb_property_task_reverse tv
+						WHERE time=:time AND
+						f_check_org_reverse(aorgid,:user_orgid)
+						AND :aorgid
+						and 
+							case :stype when '1' then
+								(type='1' or type='2')
+							else 
+								type='3'
+							end
+						order by (select orgname from org where orgid=tv.borgid)	">
+				
+				<Field>time</Field>
+				<Field QueryValue="aorgid=:aorgid">aorgid</Field>
+				<Field SValue="dept">user_orgid</Field>
+				<Field>stype</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 反向考核填报 -->
+	<Handle UID="updatereverse">
+
+		<Operation Sql="update tb_property_task_reverse SET
+								score1=:score1,
+								score2=:score2,
+								score3=:score3,
+								remark=:remark,
+								status=:status,
+								savetime=DATE_FORMAT(NOW(),'%Y-%m-%d')
+						WHERE id=:taskid">
+				
+				<Field>score1</Field>
+				<Field>score2</Field>
+				<Field>score3</Field>
+				<Field>remark</Field>
+				<Field>status</Field>
+				<Field>taskid</Field>
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 测试jdbc -->
+	<Handle UID="testphone">
+
+		<Operation Sql="select 1 from dual">
+				
+				<Field>phone</Field>
+				<Field>content</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/setphone.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 测试从表查数据发短信 -->
+	<Handle UID="testphonecontent">
+
+		<Operation Sql="select * from tb_sms where status=0;">
+				
+				
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/setphoneContent.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+	
+ </Content>

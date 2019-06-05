@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+	<!--员工管理 -->
+	<Handle UID="query">
+        <Operation Sql="select userid, username, sex, dept, age, position, cardid, 
+        type, eid, email, telephone, phone, fax, passwords, resdate,pactive, ppass, pid from employee_info;
+">
+
+        </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/list_user.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+                        <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+		<!--调查员管理 -->
+	<Handle UID="investquery">
+        <Operation Sql="select userid, username, sex, dept, age, position, cardid, type, eid, id, email, telephone, phone, fax, passwords, resdate from employee_info
+where type=0">
+        </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/list_price_manager.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+                        <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 新增员工信息 -->
+	<Handle UID="insemployee">
+	<Operation Sql="insert into employee_info
+  (userid, username, sex, dept, age, position, cardid, type, eid, id, email, telephone, phone, fax, passwords, resdate)
+values
+  (:userid, :username, :sex, '', '', '', '', 0, :eid, :id, :email, '', :phone, '', :passwords, sysdate);
+">
+  <Field Sequences="uid_seq">id</Field>
+  <Field>username</Field>
+  <Field>userid</Field>
+  <Field>passwords</Field>
+  <Field>email</Field>
+  <Field>phone</Field>
+  <Field>sex</Field>
+  <Field SValue="eid">eid</Field>
+  </Operation>
+		<Other>
+		   <SuccessMsg>操作成功！</SuccessMsg>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/mainservlet?fid=employee.xml@query</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+                        <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 修改客户信息 -->
+<Handle UID="gotoupdemployee">
+        <Operation Sql="select userid,username,pactive,phone,email from employee_info where pid=:pid">
+        <Field SValue="pid">pid</Field>
+        </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/employeemod.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+             <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>		
+	<Handle UID="updemployee">
+        <Operation Sql="update employee_info
+   set 
+       username = :username,
+       sex = :sex,
+       email = :email,
+       phone = :phone,
+       passwords = nvl(:passwords,passwords)
+ where userid = :userid
+">
+        <Field>userid</Field>
+        <Field>username</Field>
+        <Field>sex</Field>
+        <Field>email</Field>
+        <Field>phone</Field>
+        <Field>passwords</Field>
+        </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/mainservlet?fid=employee.xml@query</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+             <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!-- 删除客户信息 -->
+	<Handle UID="changestatus">
+	<Operation Sql="update employee_info set pactive=:status where id=:id">
+  <Field>id</Field>
+  <Field>status</Field>
+  </Operation>
+		<Other>
+		<SuccessMsg>操作成功！</SuccessMsg>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/mainservlet?fid=employee.xml@query</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+                        <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+
+	<Handle UID="privmanage">
+	<!-- 员工所有权限 -->
+	<Operation Sql="select distinct func_id, emp_id from emp_func where emp_id =:userid order by func_id">
+	<Field>userid</Field>
+  </Operation>
+  <!-- 总权限列表 -->
+  	<Operation Sql="select distinct funcid,funcname from functionlist where sup_func =:allfunc_id order by funcid ">
+  	<Field DefaultValue="100000">allfunc_id</Field>
+  </Operation>
+  <!-- 所有子权限 -->
+  <Operation Sql="select funcid,funcname,sup_func from functionlist 
+  	where sup_func in (select funcid from functionlist where sup_func =:allfunc_id) order by funcid">
+    <Field DefaultValue="100000">allfunc_id</Field>
+  </Operation>
+  <!-- 查看员工姓名 -->
+  <Operation Sql="select userid,username from employee_info where userid =:userid">
+  	<Field>userid</Field>
+  </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/user_func.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+        <Handle UID="savepriv">
+        <Operation Sql="delete from emp_func where emp_id=:emp_id">
+        <Field>emp_id</Field>
+        </Operation>
+	<Operation Sql="insert into emp_func(emp_id, func_id) values(:emp_id,:funcsubid);">
+        <Field>emp_id</Field>
+        <Field>funcsubid</Field>
+	</Operation>
+		<Other>
+                <SuccessMsg>设置权限成功</SuccessMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=employee.xml@query</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!-- 密码初始化 -->
+<Handle UID="init_employee">
+<Operation Sql="update employee_info set passwords = '1C081CIB1E6011J11346FAG529IFI8HE' where pid=:pid">
+<Field>pid</Field>
+</Operation>
+<Other>
+<SuccessMsg>初始化密码成功！(已改为qwe123)</SuccessMsg>
+<FaultMsg>初始化密码失败！</FaultMsg>
+<SuccessPage>
+<Url></Url>
+</SuccessPage>
+<FaultPage>
+<Url></Url>
+</FaultPage>
+</Other>
+</Handle>
+
+
+	<!-- 分派调查 -->
+	<Handle UID="investmanage">
+	<Operation Sql="select b.code_id,b.code_name from code_info b where b.code_id in (
+select to_char(code_id) from code_info where code_type='25'
+minus
+select a.campanyid from carpricetask a) and code_type='25' order by b.prop_a">
+  </Operation>
+  	<Operation Sql="select b.code_id,b.code_name from code_info b where b.code_id in (
+select a.campanyid from carpricetask a where empid=:emp_id) and code_type='25' order by b.prop_a ">
+  	<Field>emp_id</Field>
+  </Operation>
+  <Operation Sql="select id,username from employee_info where id=:emp_id">
+    <Field>emp_id</Field>
+  </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/user_invest.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+        <Handle UID="saveinvest">
+        <Operation Sql="delete from carpricetask where empid=:emp_id">
+        <Field>emp_id</Field>
+        </Operation>
+	<Operation Sql="insert into carpricetask
+                           (campanyid, empid)
+                         values
+                           (:func_id, :emp_id)">
+        <Field>emp_id</Field>
+        <Field>func_id</Field>
+	</Operation>
+		<Other>
+                <SuccessMsg>设置成功</SuccessMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=employee.xml@investmanage</Url>
+				<Param Name="emp_id" Operation="operation1">emp_id</Param>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 车价录入 -->	
+	<Handle UID="pricemanage">
+  <Operation Sql="select b.code_id,b.code_name from code_info b where b.code_id in (
+select a.campanyid from carpricetask a where empid=:emp_id) and code_type='25' order by b.prop_a ">
+    <Field SValue="id">emp_id</Field>
+  </Operation>
+  <Operation Sql="select 1 from dual"></Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/list_price.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+	<!-- 车价录入 -->	
+	<Handle UID="queryprice">
+	  <Operation Sql="select b.code_id,b.code_name from code_info b where b.code_id in (
+select a.campanyid from carpricetask a where empid=:emp_id) and code_type='25' order by b.prop_a ">
+    <Field SValue="id">emp_id</Field>
+  </Operation>
+  <Operation Sql="	select   d.companyid,d.typeid,d.typebid,sys_p.getcodenamebyid(d.companyid, 25) companyidname,
+                   sys_p.getcodenamebyid(d.typeid, 26) typeidname,
+                   sys_p.getcodenamebyid(d.typebid, 27) typebidname,e.newprice,e.intime from
+  (select a.code_id companyid,b.code_id typeid,c.code_id typebid from code_info a,code_info b,code_info c
+  where a.code_type='25' and b.code_type='26' and c.code_type='27'
+  and b.sup_code_id=a.code_id and c.sup_code_id=b.code_id) d,carprice e,carpricetask f
+   where 
+   d.companyid=e.companyid(+) and d.typeid=e.typeid(+) and d.typebid=e.typebid(+) and d.companyid=f.campanyid
+                   and f.empid=:emp_id and :companyid and :typeid and :typebid order by d.companyid,d.typeid,d.typebid">
+    <Field SValue="id">emp_id</Field>
+    <Field QueryValue="d.companyid=:companyid">companyid</Field>
+    <Field QueryValue="d.typeid=:typeid">typeid</Field>
+    <Field QueryValue="d.typebid=:typebid">typebid</Field>
+  </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/list_price.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>	
+<!-- 新车价格查询 -->	
+	<Handle UID="querynewprice">
+	  <Operation Sql="select b.code_id,b.code_name from code_info b where 
+  code_type='25' order by b.prop_a ">
+  </Operation>
+  <Operation Sql="select   e.companyid,e.typeid,e.typebid,sys_p.getcodenamebyid(e.companyid, 25) companyidname,
+                   sys_p.getcodenamebyid(e.typeid, 26) typeidname,
+                   sys_p.getcodenamebyid(e.typebid, 27) typebidname,e.newprice price,e.intime,'' lisencedate from
+               carprice e
+   where  :companyid and :typeid and :typebid order by e.companyid,e.typeid,e.typebid">
+    <Field QueryValue="e.companyid=:companyid">companyid</Field>
+    <Field QueryValue="e.typeid=:typeid">typeid</Field>
+    <Field QueryValue="e.typebid=:typebid">typebid</Field>
+  </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/pricequery.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>	
+		<!-- 二手车价格查询 -->	
+	<Handle UID="queryoldprice">
+	  <Operation Sql="select b.code_id,b.code_name from code_info b where 
+  code_type='25' order by b.prop_a ">
+  </Operation>
+  <Operation Sql="select   e.companyid,e.typeid,e.typebid,sys_p.getcodenamebyid(e.companyid, 25) companyidname,
+                   sys_p.getcodenamebyid(e.typeid, 26) typeidname,
+                   sys_p.getcodenamebyid(e.typebid, 27) typebidname,e.oldprice price,e.intime,lisencedate from
+               carpriceold e
+   where  :companyid and :typeid and :typebid order by e.companyid,e.typeid,e.typebid">
+    <Field QueryValue="e.companyid=:companyid">companyid</Field>
+    <Field QueryValue="e.typeid=:typeid">typeid</Field>
+    <Field QueryValue="e.typebid=:typebid">typebid</Field>
+  </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/pricequery.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+            <FaultPage><Url></Url></FaultPage>
+		</Other>
+	</Handle>
+ </Content>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="woocms"
+  id="myeclipse.1559006592774"
+  context-root="/woocms"
+  j2ee-spec="6.0"
+  archive="woocms.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

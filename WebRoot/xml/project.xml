@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致 -->
+	<Handle UID="f100">
+        <Operation Sql="select pid from employee_info where (username=:id or userid=:id) " 
+        ExpectRows="&gt;0" ExpectFaultMsg="无此用户！">
+			<Field>id</Field>
+        </Operation>
+		<Operation Sql="select 1 from dual"></Operation>
+		<Operation Sql="select e.userid, e.username,f_getdeptbypid(e.pid) deptname, e.sex, e.dept,getporgnamebydept(e.dept) orgname, e.age, e.cardid, e.pid, e.email, e.telephone, e.phone, e.fax, e.passwords, e.resdate,'3' openid   from employee_info e  
+		 where (username=:id or userid=:id) and passwords=:passwords" ExpectRows="&gt;0" ExpectFaultMsg="密码错误！">
+			<Field>id</Field>
+			<Field Encrypt="true">passwords</Field>
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg>密码错误！</FaultMsg>
+			<SuccessPage>
+				 <Url>/mainservlet?fid=login.xml@gotoindex</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+<!-- 项目列表 -->
+	<Handle UID="projectlist">
+				<Operation
+			Sql="
+        select * from (select 
+		 id, pname,(select nname from tb_norm where id=nid) zbname,(select typename from tb_project_type where id=pclassify) lbname,
+      intime,pstatus from 
+          tb_project t where orgid=:orgid and :pname and :pstatus and f_check_project(t.id,:orgid)=1  order by intime desc) t limit  :start,:limit
+        ">
+      <Field QueryValue="pname like format_like(:pname)" >pname</Field>
+        <Field QueryValue="pstatus like format_like(:pstatus)" >pstatus</Field>	
+         <Field SValue="dept">orgid</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	 from tb_project t where orgid=:orgid and :pname and :pstatus  and f_check_project(t.id,:orgid)=1) a
+
+				 ">
+    <Field QueryValue="pname like format_like(:pname)" >pname</Field>
+        <Field QueryValue="pstatus like format_like(:pstatus)" >pstatus</Field>	
+       <Field SValue="dept">orgid</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 项目删除 -->
+	
+	<Handle UID="delproject">
+
+		<Operation Sql="delete from tb_project where id=:id">
+			<Field>id</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 指标列表 -->
+	<Handle UID="normlist">
+		
+		<Operation
+			Sql="select id,nname from tb_norm where propertyid=:propertyid order by intime desc">
+			<Field>propertyid</Field>
+		</Operation>
+
+	
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!--新增项目 -->
+	<Handle UID="addproject">
+		<!-- 员工所有权限 -->
+		<Operation
+			Sql="insert into tb_project (id,nid,pclassify,pname,ptext,assessunit,orgid,begindate,enddate,source,amount,linkman,tel,address,lon,lat,intime) values(
+			
+			                           :id,:nid,:pclassify,:pname,:ptext,:assessunit,:orgid,:begindate,:enddate,:source,:amount,:linkman,:tel,:address,:lon,:lat,NOW())">
+			<Field Sequences="id">id</Field>
+			<Field>nid</Field>
+		    <Field>pclassify</Field>
+		    <Field>pname</Field>
+		    <Field>ptext</Field>
+		    <Field>assessunit</Field>
+		    <Field>orgid</Field>
+		    <Field>begindate</Field>
+		    <Field>enddate</Field>
+		    <Field>source</Field>
+		    <Field>amount</Field>
+		    <Field>linkman</Field>
+		    <Field>tel</Field>
+		    <Field>address</Field>
+		    <Field>lon</Field>
+		    <Field>lat</Field>
+		</Operation>
+
+	
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!--项目详情 -->
+	<Handle UID="projectdetail">
+		<!-- 员工所有权限 -->
+		<Operation
+			Sql="select id,(select propertyid from tb_norm where id=nid) propertyid,
+			(select nname from tb_norm where id=nid) nname,nid,pclassify,(select typename from tb_project_type where id=pclassify ) as pclassifyname,
+			(select orgname from org a where a.orgid=t.orgid) as orgname,
+			(select orgname from org a where a.orgid=t.assessunit) as assessunitname,
+			pname,ptext,assessunit,orgid,begindate,enddate,source,amount,
+			linkman,tel,address,lon,lat,intime from tb_project t where id=:id">
+			<Field>id</Field>
+			
+		</Operation>
+
+	
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 项目更新-->
+	<Handle UID="updateproject">
+		
+		<Operation
+			Sql="update tb_project set nid=:nid,pclassify=:pclassify,pname=:pname,ptext=:ptext,assessunit=:assessunit,orgid=:orgid,begindate=:begindate,enddate=:enddate,source=:source,amount=:amount,linkman=:linkman,tel=:tel,address=:address,lon=:lon,lat=:lat,pstatus=0 where id=:id and pstatus!=1;">
+			<Field>id</Field>
+			<Field>nid</Field>
+		    <Field>pclassify</Field>
+		    <Field>pname</Field>
+		    <Field>ptext</Field>
+		    <Field>assessunit</Field>
+		    <Field>orgid</Field>
+		    <Field>begindate</Field>
+		    <Field>enddate</Field>
+		    <Field>source</Field>
+		    <Field>amount</Field>
+		    <Field>linkman</Field>
+		    <Field>tel</Field>
+		    <Field>address</Field>
+		    <Field>lon</Field>
+		    <Field>lat</Field>
+		</Operation>
+
+	
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目分类列表 -->
+	<Handle UID="projecttypelist">
+				<Operation
+			Sql="
+        select * from (select 
+		 a.id, typename,n.nname,sort from 
+          tb_project_type a  join tb_norm  n on a.nid=n.id where :queryname order by a.intime desc) t limit  :start,:limit
+        ">
+      <Field QueryValue="(a.typename like format_like(:queryname) or n.nname like format_like(:queryname))" >queryname</Field>
+       
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	from 
+          tb_project_type a  join tb_norm  n on a.nid=n.id where :queryname  ) a
+
+				 ">
+      <Field QueryValue="(a.typename like format_like(:queryname) or n.nname like format_like(:queryname))" >queryname</Field>
+       
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 项目分类删除 -->
+	
+	<Handle UID="delprojecttype">
+
+		<Operation Sql="delete from tb_project_type where id=:id">
+			<Field>id</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 项目分类增加 -->
+	
+	<Handle UID="addprojecttype">
+
+		<Operation Sql="insert into tb_project_type (id,typename,nid,sort,intime) values(:id,:typename,:nid,:sort,NOW())">
+				<Field Sequences="id">id</Field>
+				<Field >typename</Field>
+				<Field >nid</Field>
+				<Field >sort</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目分类详情 -->
+	
+	<Handle UID="projecttypedetail">
+
+		<Operation Sql="select id,typename,nid,sort,intime from tb_project_type where id=:id">
+				<Field >id</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目分类更新 -->
+	
+	<Handle UID="updateprojecttype">
+
+		<Operation Sql="update  tb_project_type set typename=:typename,nid=:nid,sort=:sort  where id=:id">
+				<Field >id</Field>
+				<Field >typename</Field>
+				<Field >nid</Field>
+				<Field >sort</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 待审核项目列表 -->
+	<Handle UID="dshprojectlist">
+				<Operation
+			Sql="
+        select * from (select 
+		a.id, pname,(select typename from tb_project_type where id=pclassify) lbname,n.nname,
+		(select orgname from org where orgid=assessunit)qtbm,(select orgname from org where orgid=a.orgid)zrbm,
+      a.begindate,a.enddate from   tb_project a  join tb_norm n on a.nid=n.id 
+       where pstatus='0' and :queryname   and f_check_project(a.id,:dept)=1 and :orgid 
+        and :assessunit   order by a.intime desc) t limit  :start,:limit
+        ">
+      <Field QueryValue="(a.pname like format_like(:queryname) OR n.nname  like format_like(:queryname))" >queryname</Field>
+       <Field SValue="dept">dept</Field>
+           <Field QueryValue="a.orgid =:orgid">orgid</Field>
+      <Field QueryValue="a.assessunit =:assessunit">assessunit</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	 from   tb_project t  join tb_norm n on t.nid=n.id  where pstatus='0' and :queryname 
+	   and :assessunit  and f_check_project(t.id,:dept)=1 and :orgid ) a
+
+				 ">
+     <Field QueryValue="(t.pname like format_like(:queryname) OR n.nname  like format_like(:queryname))" >queryname</Field>	
+ 		<Field SValue="dept">dept</Field>
+           <Field QueryValue="t.orgid =:orgid">orgid</Field>
+      <Field QueryValue="t.assessunit =:assessunit">assessunit</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 已审核项目列表 -->
+	<Handle UID="yshprojectlist">
+				<Operation
+			Sql="
+        select * from (select 
+		a.id, pname,(select typename from tb_project_type where id=pclassify) lbname,n.nname,
+		(select orgname from org where orgid=assessunit)qtbm,(select orgname from org where orgid=a.orgid)zrbm,
+      a.begindate,a.enddate from   tb_project a  join tb_norm n on a.nid=n.id  where pstatus='1'
+       and :queryname  and f_check_project(a.id,:dept)=1 and :orgid  and :assessunit   order by a.intime desc) t limit  :start,:limit
+        ">
+      <Field QueryValue="(a.pname like format_like(:queryname) OR n.nname  like format_like(:queryname))" >queryname</Field>
+          <Field SValue="dept">dept</Field>
+           <Field QueryValue="a.orgid =:orgid">orgid</Field>
+      <Field QueryValue="a.assessunit =:assessunit">assessunit</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	 from   tb_project t  join tb_norm n on t.nid=n.id  where pstatus='1' and :queryname  and f_check_project(t.id,:dept)=1 and :orgid and :assessunit  ) a
+
+				 ">
+     <Field QueryValue="(t.pname like format_like(:queryname) OR n.nname  like format_like(:queryname))" >queryname</Field>	
+          <Field SValue="dept">dept</Field>
+           <Field QueryValue="t.orgid =:orgid">orgid</Field>
+      <Field QueryValue="t.assessunit =:assessunit">assessunit</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 项目审核通过 -->
+	
+	<Handle UID="dopassproject">
+
+		<Operation Sql="update  tb_project set pstatus='1' ,modftime=NOW(),uid=:uid  where id=:id">
+				<Field >id</Field>
+				<Field SValue="pid">uid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 项目审核不通过 -->
+	
+	<Handle UID="donopassproject">
+
+		<Operation Sql="update  tb_project set pstatus='2' ,modftime=NOW(),uid=:uid,premark=:premark  where id=:id">
+				<Field >id</Field>
+				<Field SValue="pid">uid</Field>
+				<Field >premark</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+		
+	
+	<!-- 项目进度 -->
+<Handle UID="projprogress">
+		<Operation
+			Sql="update tb_proj_progress set
+  pgname=:pgname
+  ,pgvalue=:pgvalue
+  ,beforeimage=:beforeimage
+  ,laterimage=:laterimage
+  ,context=:context
+  ,status=1
+  ,intime=now()
+   where id=:id">
+			<Field>id</Field>
+			<Field>pgname</Field>
+			<Field>pgvalue</Field>
+			<Field>beforeimage</Field>
+			<Field>laterimage</Field>
+			<Field>context</Field>
+		</Operation>
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:id and ftype='xmjd' ">
+			<Field>id</Field>
+		</Operation>
+		
+		<Operation
+			Sql="insert into tb_file 
+					(
+						fname,
+						furl,
+						mainid,
+						ftype
+					) values
+					(
+						:oldFileName,
+						:newFileUrl,
+						:id,
+						'xmjd'
+					)">
+			<Field>id</Field>
+			<Field>oldFileName</Field>
+			<Field>newFileUrl</Field>
+		</Operation>
+		
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:id and ftype='xmjd' and (furl is null or furl='') ">
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目进度重填 -->
+<Handle UID="projagain">
+		<Operation
+			Sql="update tb_proj_progress set
+  writetime=:writetime,
+  remark=:remark,
+  intime=now(),
+  status = 2
+   where id=:id">
+			<Field>id</Field>
+			<Field>writetime</Field>
+			<Field>remark</Field>
+		</Operation>
+		
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:id and ftype='jdct' ">
+			<Field>id</Field>
+		</Operation>
+		
+		<Operation
+			Sql="insert into tb_file 
+					(
+						fname,
+						furl,
+						mainid,
+						ftype
+					) values
+					(
+						:oldFileName,
+						:newFileUrl,
+						:id,
+						'jdct'
+					)">
+			<Field>id</Field>
+			<Field>oldFileName</Field>
+			<Field>newFileUrl</Field>
+		</Operation>
+		
+		
+		<Operation
+			Sql="delete from tb_file where mainid=:id and ftype='jdct' and (furl is null or furl='') ">
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目进度查看 -->
+<Handle UID="projprogressinfo">
+		<Operation
+			Sql="select pgname,pgvalue,beforeimage,laterimage,context,time from tb_proj_progress where id=:id">
+			<Field>id</Field>
+		</Operation>
+		<!-- 进度附件 -->
+		<Operation
+			Sql="select id,fname,furl,ftype,intime from tb_file where mainid=:id and ftype='xmjd' ">
+			<Field>id</Field>
+		</Operation>
+		
+		<!-- 重填附件 -->
+		<Operation
+			Sql="select id,fname,furl,ftype,intime from tb_file where mainid=:id and ftype='jdct' ">
+			<Field>id</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 项目进度列表 -->
+	<Handle UID="projectprogresslist">
+				<Operation
+			Sql="
+        select * from (select p.id,a.pname,n.nname,
+        (select typename from tb_project_type where id=a.pclassify) lbname,p.time,p.intime,p.status 
+        from tb_proj_progress p join tb_project a on p.pid=a.id 
+join tb_norm n on a.nid=n.id where  p.pgname=:pgname 
+and :pname and :nname and :status and f_check_project(a.id,:orgid)=1
+ and a.pstatus='1'
+ order by p.time desc) t limit  :start,:limit
+        ">
+      <Field QueryValue="pname like format_like(:pname)" >pname</Field>
+       <Field QueryValue="nname like format_like(:nname)" >nname</Field>
+        <Field QueryValue="p.status like format_like(:status)" >status</Field>	
+        <Field SValue="dept">orgid</Field>
+         <Field >pgname</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	 from tb_proj_progress p join tb_project a on p.pid=a.id 
+join tb_norm n on a.nid=n.id where  p.pgname=:pgname and :pname and :nname and :status
+ and f_check_project(a.id,:orgid)=1 ) t
+
+				 ">
+    <Field QueryValue="pname like format_like(:pname)" >pname</Field>
+       <Field QueryValue="nname like format_like(:nname)" >nname</Field>
+        <Field QueryValue="p.status like format_like(:status)" >status</Field>	
+         <Field >pgname</Field>
+         <Field SValue="dept">orgid</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 按指标项目分类列表 -->
+	<Handle UID="projecttypebynid">
+		<Operation
+			Sql="select id,typename from tb_project_type  where nid=:nid order by sort ">
+			<Field>nid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="projectsupervise">
+				<Operation
+			Sql="
+				select * from (
+					SELECT 
+						p.id,
+						p.pname,
+						n.nname,
+						pt.typename,
+						prop.intime,
+						prop.pgname,
+						prop.status,
+						f_getproject_outstatus(p.id) pg_status 
+					FROM 
+						tb_project p 
+						INNER JOIN tb_norm n ON p.nid=n.id
+						INNER JOIN tb_project_type pt ON p.pclassify =pt.id
+						INNER JOIN tb_proj_progress prop ON prop.id=(f_getlast_pro_progress(p.id))
+					WHERE :assessunit and f_check_project(p.id,:orgid)=1
+					and :queryparam and :pg_status and :isouter
+					and p.pstatus='1'
+				)t limit  :start,:limit
+        ">
+            <Field QueryValue="p.assessunit=:assessunit" >assessunit</Field>
+      <Field SValue="dept" >orgid</Field>
+       <Field QueryValue=" (p.pname like format_like(:queryparam) OR n.nname like format_like(:queryparam) OR pt.typename like format_like(:queryparam) ) " >queryparam</Field>
+        <Field QueryValue="prop.status =:pg_status" >pg_status</Field>
+         <Field QueryValue="f_getproject_outstatus(p.id) =:isouter" >isouter</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+				select allrs,ys,beg,limit1 from (
+						select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+					FROM 
+						tb_project p 
+						INNER JOIN tb_norm n ON p.nid=n.id
+						INNER JOIN tb_project_type pt ON p.pclassify =pt.id
+						INNER JOIN tb_proj_progress prop ON prop.id=(f_getlast_pro_progress(p.id))
+					WHERE :assessunit and f_check_project(p.id,:orgid)=1 and :pg_status and :isouter
+					and :queryparam
+					and p.pstatus='1'
+				) a
+        ">
+            <Field QueryValue="p.assessunit=:assessunit" >assessunit</Field>
+      <Field SValue="dept" >orgid</Field>
+       <Field QueryValue=" (p.pname like format_like(:queryparam) OR n.nname like format_like(:queryparam) OR pt.typename like format_like(:queryparam) ) " >queryparam</Field>
+        <Field QueryValue="prop.status =:pg_status" >pg_status</Field>
+         <Field QueryValue="f_getproject_outstatus(p.id) =:isouter" >isouter</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	
+	<!-- 项目下进度列表 -->
+	<Handle UID="projprogresslist">
+		<Operation
+			Sql="select id,pid,pgname,pgvalue,beforeimage,laterimage,context,intime,case status when 1 then '已更新' when 2 then '要求重填' else '' end as statusname from tb_proj_progress p where pid=:pid and status!=0 order by intime desc ">
+			<Field>pid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+ </Content>

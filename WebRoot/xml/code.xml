@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致 -->
+	<Handle UID="codelist">
+<Operation Sql="select a.code_id,a.code_name,a.prop_a,a.ordernumber from tb_codeinfo a
+where IFNULL(a.sup_code_id,'1')=IFNULL(NULL,'1') and code_type=:codetype order by a.ordernumber">
+
+<Field>sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ <Operation Sql="select a.code_id,a.code_name,a.prop_a,a.ordernumber,a.sup_code_id from tb_codeinfo a
+where a.code_id=:sup_code_id  and code_type=:codetype order by a.ordernumber">
+
+<Field>sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/list_code.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="delcode">
+<Operation Sql="select 1 from tb_codeinfo where sup_code_id=:code_id and code_type=:codetype" ExpectRows="0" ExpectFaultMsg="该代码有下级代码，不能删除！">
+<Field >sup_code_id</Field>
+<Field>code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ <Operation Sql="delete from tb_codeinfo where code_id=:code_id and code_type=:codetype">
+<Field>code_id</Field>
+<Field>sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=code.xml@codelist</Url>
+				<Param Name="sup_code_id">sup_code_id</Param>
+				<Param Name="codetype">codetype</Param>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="gotoinscode">
+<Operation Sql="select * from tb_codeinfo where code_id=:sup_code_id and code_type=:codetype">
+
+<Field >sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ <Operation Sql="select * from tb_codetype t where t.typeid=:codetype">
+ <Field>codetype</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/codeadd.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="inscode">
+<Operation Sql="insert into tb_codeinfo
+  (code_type,code_id, code_name, eid, prop_a, active, sup_code_id,ordernumber)
+values
+  (:codetype,:code_id, :code_name, '', :prop_a, '', :sup_code_id, :ordernumber)">
+  <Field>codetype</Field>
+<Field>code_id</Field>
+<Field >sup_code_id</Field>
+<Field>code_name</Field>
+<Field>prop_a</Field>
+<Field>ordernumber</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=code.xml@codelist</Url>
+				<Param Name="sup_code_id">sup_code_id</Param>
+				<Param Name="codetype">codetype</Param>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="gotomodcode">
+<Operation Sql="select code_type, code_id, code_name, eid, prop_a, active, sup_code_id, ordernumber,
+(select typename from tb_codetype where typeid=a.code_type) typename,
+(select code_name from tb_codeinfo where code_id=a.sup_code_id and code_type=:codetype) supcodename from tb_codeinfo a where code_id=:code_id and code_type=:codetype">
+<Field>code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/codemod.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="domodcode">
+<Operation Sql="update tb_codeinfo set code_id=:code_id, code_name=:code_name,prop_a=:prop_a,ordernumber=:ordernumber where code_id=:code_id and code_type=:codetype">
+<Field>code_name</Field>
+<Field>prop_a</Field>
+<Field>code_id</Field>
+<Field>ordernumber</Field>
+<Field>codetype</Field>
+<Field>sup_code_id</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+			<Url>/mainservlet?fid=code.xml@codelist</Url>
+				<Param Name="sup_code_id">sup_code_id</Param>
+				<Param Name="codetype">codetype</Param>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<Handle UID="getcode">
+<Operation Sql="select code_id,code_name from tb_codeinfo where nvl(sup_code_id,'1')=nvl(:sup_code_id,'1') and code_type=:codetype">
+<Field >sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qdata_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="getcode2">
+<Operation Sql="select code_id,code_name from tdcar.code_info where sup_code_id=:sup_code_id order by code_id " >
+<Field >sup_code_id</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qdata_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="getcode3">
+<Operation Sql="select code_id,code_name from tdcar.code_info where sup_code_id=:sup_code_id order by code_name" >
+<Field >sup_code_id</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qdata_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<Handle UID="getcodearr">
+<Operation Sql="select a.code_id, a.code_name, sum(b.code_id) haschild
+  from tb_codeinfo a, tb_codeinfo b
+ where a.code_id = b.sup_code_id(+)
+   and a.sup_code_id = :sup_code_id
+    group by a.code_id,a.code_name,a.ordernumber order by a.ordernumber">
+<Field >sup_code_id</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qdata_array.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+ </Content>

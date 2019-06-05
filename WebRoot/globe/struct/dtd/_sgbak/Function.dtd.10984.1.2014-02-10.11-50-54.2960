@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by wenyongjun (xuntong software ..ltd.) -->
+<!-- 每一个function必须指定FunctionId，ActionName，SuccessPage，FaultPage得值 --> 
+<!-- Content是根目录，包含一个以上的function -->
+<!ELEMENT Content (Function+)>
+<!ELEMENT Function (FunctionId, ActionName, SuccessPage, FaultPage)>
+<!ELEMENT SuccessPage (#PCDATA)>
+<!ELEMENT FunctionId (#PCDATA)>
+<!ELEMENT FaultPage (#PCDATA)>
+<!ELEMENT ActionName (#PCDATA)>

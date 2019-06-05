@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun
+		(Tianjin.Xuntong.LTD)
+	-->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 指标列表 -->
+<Handle UID="normlist">
+<Operation Sql="select 
+					id,nname,propertyid,
+					(select pname from tb_norm_property where id=n.propertyid) as propertyidname,
+					case 
+						when	(select count(1) FROM tb_property_task_value WHERE normid = n.id)=0 then 1
+					ELSE 0 end candel,
+					nclassify,
+					(select code_name from tb_codeinfo where code_id=n.nclassify) as nclassifyname,
+					ntype,nvalue,ntext,n.intime,
+					(select  orgname from org where orgid= (select orgid from tb_norm_assessorg where nid=n.id limit 1)) as orgname 
+				from tb_norm n where :queryparam order by ordernumber ">
+
+<Field QueryValue="( n.nname like format_like(:queryparam) or (select code_name from tb_codeinfo where code_id=n.nclassify) like format_like(:queryparam) )" >queryparam</Field>
+ </Operation>
+
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 指标信息 -->
+	<Handle UID="norminfo">
+<Operation Sql="select id,nname,propertyid,nclassify,ntype,nvalue,ntext,n.intime,ordernumber 
+  from tb_norm n where id=:nid ">
+
+<Field >nid</Field>
+ </Operation>
+ 
+ <Operation Sql="select orgname,orgid from org where orgid in (select orgid from tb_norm_assessorg where nid=:nid)">
+
+<Field >nid</Field>
+
+ </Operation>
+ 
+ <Operation Sql="select orgname,orgid from org where orgid in (select orgid from tb_norm_org where nid=:nid)">
+<Field >nid</Field>
+ </Operation>
+ 
+ <Operation Sql="select orgname,orgid from org where orgid in (select orgid from tb_norm_teamorg where nid=:nid)">
+<Field >nid</Field>
+ </Operation>
+ 
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+<!-- 新增指标 -->
+<Handle UID="normadd">
+		<Operation
+			Sql="insert into tb_norm
+  (id,nname,propertyid,nclassify,ntype,nvalue,ntext,intime,ordernumber)
+values
+  (:id,:nname,:propertyid,:nclassify,:ntype,:nvalue,:ntext,now(),:ordernumber)">
+			<Field Sequences="nid_seq">id</Field>
+			<Field>nname</Field>
+			<Field>propertyid</Field>
+			<Field>nclassify</Field>
+			<Field>ntype</Field>
+			<Field>nvalue</Field>
+			<Field>ntext</Field>
+			<Field>ordernumber</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_norm_assessorg(nid, orgid,intime) values(:id,:assessorgid,now());">
+			<Field OtherOperation="operation1">id</Field>
+			<Field>assessorgid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_norm_org(nid, orgid,intime) values(:id,:orgid,now());">
+			<Field OtherOperation="operation1">id</Field>
+			<Field>orgid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_norm_teamorg(nid, orgid,intime) values(:id,:teamorgid,now());">
+			<Field OtherOperation="operation1">id</Field>
+			<Field>teamorgid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 删除指标 -->
+	<Handle UID="normdel">
+<Operation Sql="call p_delnorm (:nid)">
+<Field>nid</Field>
+ </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!-- 编辑指标 -->
+<Handle UID="normedit">
+		<Operation
+			Sql="update tb_norm set
+  nname=:nname
+  ,propertyid=:propertyid
+  ,nclassify=:nclassify
+  ,ntype=:ntype
+  ,nvalue=:nvalue
+  ,ntext=:ntext
+  ,ordernumber=:ordernumber
+   where id=:id">
+			<Field>id</Field>
+			<Field>nname</Field>
+			<Field>propertyid</Field>
+			<Field>nclassify</Field>
+			<Field>ntype</Field>
+			<Field>nvalue</Field>
+			<Field>ntext</Field>
+			<Field>ordernumber</Field>
+		</Operation>
+		<Operation Sql="delete from tb_norm_assessorg where nid=:id">
+<Field>id</Field>
+ </Operation>
+		<Operation
+			Sql="insert into tb_norm_assessorg(nid, orgid,intime) values(:id,:assessorgid,now());">
+			<Field>id</Field>
+			<Field>assessorgid</Field>
+		</Operation>
+		<Operation Sql="delete from tb_norm_org where nid=:id">
+<Field>id</Field>
+ </Operation>
+		<Operation
+			Sql="insert into tb_norm_org(nid, orgid,intime) values(:id,:orgid,now());">
+			<Field >id</Field>
+			<Field>orgid</Field>
+		</Operation>
+		<Operation Sql="delete from tb_norm_teamorg where nid=:id">
+			<Field>id</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_norm_teamorg(nid, orgid,intime) values(:id,:teamorgid,now());">
+			<Field OtherOperation="operation1">id</Field>
+			<Field>teamorgid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 单位列表 -->
+	<Handle UID="orglist">
+		<Operation Sql="
+			SELECT * FROM org WHERE suporgid=:suporgid and :orgflag and f_check_org(orgid,:p_orgid)">
+			<Field SValue="dept">p_orgid</Field>
+		    <Field>suporgid</Field>
+		    <Field QueryValue="orgflag = :orgflag">orgflag</Field>
+		</Operation>
+
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<!-- 小结列表 -->
+	<Handle UID="summarylist">
+<Operation Sql="select * from (select s.id,s.orgid,orgname,(select nname from tb_norm where id=s.nid) nname,context1,context2,context3,taskdate,s.status,s.intime
+ from tb_summary s inner join org o on s.orgid=o.orgid where year(taskdate)=:year and f_check_summary(s.id,:dept)>0) t limit :start,:limit">
+
+<Field >year</Field>
+<Field SValue="dept">dept</Field>
+<Field DefaultValue="0">start</Field>
+<Field DefaultValue="10">limit</Field>
+ </Operation>
+ <Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	  from tb_summary s inner join org o on s.orgid=o.orgid where year(taskdate)=:year and f_check_summary(s.id,:dept)>0) a
+
+				 ">
+<Field >year</Field>
+<Field SValue="dept">dept</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+
+		</Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 编辑小结 -->
+<Handle UID="summaryedit">
+		<Operation
+			Sql="update tb_summary set
+  context1=:context1
+  ,context2=:context2
+  ,context3=:context3
+  ,status=1
+  ,intime=now()
+ where id=:id">
+			<Field>id</Field>
+			<Field>context1</Field>
+			<Field>context2</Field>
+			<Field>context3</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 编辑指标 -->
+<Handle UID="normreverse">
+		<Operation Sql="delete from tb_property_task_reverse_dept">
+<Field>id</Field>
+ </Operation>
+		<Operation
+			Sql="insert into tb_property_task_reverse_dept(orgid,type,intime) values(:assessorgid,'1',now());">
+			<Field>assessorgid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_property_task_reverse_dept(orgid,type,intime) values(:orgid,'2',now());">
+			<Field >id</Field>
+			<Field>orgid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 双向考核对象获取 -->
+	<Handle UID="normreverseorglist">
+		<Operation Sql="
+			SELECT p.orgid,o.orgname FROM tb_property_task_reverse_dept p inner join org o on p.orgid=o.orgid WHERE type='1'">
+		    <Field>type</Field>
+		</Operation>
+		<Operation Sql="
+			SELECT p.orgid,o.orgname FROM tb_property_task_reverse_dept p inner join org o on p.orgid=o.orgid WHERE type='2'">
+		    <Field>type</Field>
+		</Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+</Content>

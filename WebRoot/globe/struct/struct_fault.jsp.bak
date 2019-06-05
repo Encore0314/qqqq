@@ -1,0 +1,50 @@
+<%@page language="java" contentType="text/html; charset=GBK" pageEncoding="GB18030"%>
+<%@page import="java.util.*"%>
+<%@page import="com.arch.event.*"%>
+<%@page import="com.arch.util.*"%>
+<%
+
+  String flag = request.getParameter("flag");
+  if (flag != null && flag.equals("1")) {
+    out.print("<script>");
+    //out.print("alert('禁止输入目录访问系统,以免对您系统造成破坏！');");
+    out.print("window.parent.location.href='/logout.jsp';");
+    out.print("</script>");
+    return;
+  }
+  else if (flag != null && flag.equals("2")) {
+    out.print("<script>");
+    out.print("alert('您操作已超时或尚未登陆系统！');");
+    out.print("window.parent.location.href='/logout.jsp';");
+    out.print("</script>");
+    return;
+  }
+ else if (flag != null && flag.equals("3")) {
+   out.print("<script>");
+    out.print("alert('验证码输入错误，请重试！');");
+  // out.print("window.parent.location.href='/logout.jsp';");
+  out.print("<script>window.history.go(-1);</script>");
+   out.print("</script>");
+   return;
+ }
+   EventResponse eventResponse = (EventResponse) request.getAttribute("result");
+  FormUtil form = new FormUtil();
+  String errorMessage = form.showErrorMsg(eventResponse.getFaultMsg());
+  out.println(errorMessage);
+  //没有设定跳转页面或本来就是返回,则默认返回上一页
+  if (eventResponse.getFaultPage().equals(""))
+    out.print("<script>window.history.go(-1);</script>");
+  else if ( !eventResponse.getFaultPage().equals("")&&!eventResponse.getFaultPage().equals("window.history.go(-1);"))
+  	out.print("<script>location='"+eventResponse.getFaultPage()+"';</script>");
+  else if (eventResponse.getFaultPage().equals("window.history.go(-1);"))
+    out.print("<script>window.history.go(-1);</script>");
+  else
+    //设定了target则使用时定的值
+    out.print("<script>" + eventResponse.getFaultTarget() + "='" + eventResponse.getFaultPage() + "';</script>");
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body>
+</html>

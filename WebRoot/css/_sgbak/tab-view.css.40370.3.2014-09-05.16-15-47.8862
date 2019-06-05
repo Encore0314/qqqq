@@ -1,0 +1,63 @@
+	.dhtmlgoodies_tabPane{
+		height:40px;	/* Height of tabs */
+		border-bottom:1px solid #cccfd0;
+		margin-top:16px;
+	}
+	.dhtmlgoodies_aTab{
+	background:rgb( 239, 243, 244 );
+	font:"微软雅黑";
+	font-size:14px;
+	font-weight:400;
+		
+	}
+	.dhtmlgoodies_tabPane DIV{
+		float:left;
+		height:40px;	/* Height of tabs */
+		padding-left:3px;
+		vertical-align:middle;
+		background-repeat:no-repeat;
+		background-position:bottom left;
+		cursor:pointer;
+		position:relative;
+		margin-left:0px;
+		margin-right:0px;
+	}
+	.dhtmlgoodies_tabPane .tabActive{
+		background-image:url('../images/tab_left_active.gif');
+		z-index:10;	
+	}
+	.dhtmlgoodies_tabPane .tabInactive{
+		margin-left:2px;
+		margin-right:3px;
+		font:"微软雅黑";
+		font-size:16px;
+		font-weight:400;
+		background-image:url('../images/tab_left_inactive.gif');
+		margin-left:0px;
+		margin-right:0px;
+		z-index:1;
+	}
+
+	.dhtmlgoodies_tabPane .inactiveTabOver{
+		background-image:url('../images/tab_left_over.gif');
+		margin-left:0px;
+		margin-right:0px;
+	}
+	.dhtmlgoodies_tabPane span{
+		font:"微软雅黑";
+		font-size:14px;
+		font-weight:400;
+		text-align:center;	
+		line-height:30px;
+	}
+	.dhtmlgoodies_tabPane .tabActive span{
+		font:"微软雅黑";
+		font-size:14px;
+		font-weight:400;
+		text-align:center;	
+		line-height:30px;
+	}
+	
+	.dhtmlgoodies_tabPane img{
+		float:left;
+	}

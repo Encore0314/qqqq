@@ -1,0 +1,13 @@
+[PropertyInfo]
+datetime,String,false,false, , ,false,<default>
+fid,String,false,false, , ,false,<default>
+flag,String,false,false, , ,false,<default>
+ip,String,false,false, , ,false,<default>
+message,String,false,false, , ,false,<default>
+sql,String,false,false, , ,false,<default>
+userid,String,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

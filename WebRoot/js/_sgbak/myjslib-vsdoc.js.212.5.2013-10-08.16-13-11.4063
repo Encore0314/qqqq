@@ -1,0 +1,1333 @@
+﻿/// <reference path="mootools-1.2.4-core-nc-vsdoc.js" />
+
+//input = text-money
+
+//input = text-date
+
+//input = text-date-select
+
+//input = text-select 
+
+var myMoo = {
+	'version' : '1.0.0',
+	'build' : '0d9113241a90b9cd5643b926795852a2026710d4'
+};
+
+var FORM = new Class( {
+
+	Implements : [ Events, Options ],
+
+	options : {
+		childCreate : false, 
+		notnull : []
+	},
+
+	initialize : function(obj) {
+		this.iframe_doupload = (new Element('iframe', {
+			styles : {
+				width : 0,
+				height : 0,
+				border : 0,
+				visibility : 'hidden',
+				position : 'absolute'
+			},
+			name : 'iframe_doupload',
+			id : 'iframe_doupload',
+			src : ''
+		})).inject(document.body);
+
+		this.uploadform = new Element('form', {
+			styles : {
+				width : 0,
+				height : 0,
+				border : 0
+			},
+			name : 'uploadform',
+			id : 'uploadform',
+			method : 'post',
+			target : 'iframe_doupload',
+			action : 'upload.jsp',
+			enctype : 'multipart/form-data',
+			encoding : 'multipart/form-data'
+		});
+
+		this.uploadform.inject(document.body);
+
+		this.uploadfile = new Element('input', {
+			styles : {
+				width : 0,
+				opacity : 0.01
+			},
+			size : 0,
+			name : 'uploadfile',
+			id : 'uploadfile',
+			type : 'file',
+			maxsize : 200,
+			fext : ''
+		});
+		this.uploadfile.inject($('uploadform'));
+
+		this.maxsize = new Element('input', {
+			name : 'maxsize',
+			id : 'maxsize',
+			type : 'hidden'
+
+		});
+		this.maxsize.inject(this.uploadform);
+
+		this.fext = new Element('input', {
+			name : 'fext',
+			id : 'fext',
+			type : 'hidden'
+		});
+		this.fext.inject(this.uploadform);
+
+		this.dbname = new Element('input', {
+			name : 'dbname',
+			id : 'dbname',
+			type : 'hidden'
+		});
+		this.dbname.inject(this.uploadform);
+
+		this.showtype = new Element('input', {
+			name : 'showtype',
+			id : 'showtype',
+			type : 'hidden'
+		});
+		this.showtype.inject(this.uploadform);
+
+		this.showcontainer = new Element('input', {
+			name : 'showcontainer',
+			id : 'showcontainer',
+			type : 'hidden'
+		});
+		this.showcontainer.inject(this.uploadform);
+		this.savepath = new Element('input', {
+			name : 'savepath',
+			id : 'savepath',
+			type : 'hidden'
+		});
+		this.savepath.inject(this.uploadform);
+
+		this.shownum = new Element('input', {
+			name : 'shownum',
+			id : 'shownum',
+			type : 'hidden'
+		});
+		this.shownum.inject(this.uploadform);
+		this.btnid = new Element('input', {
+			name : 'btnid',
+			id : 'btnid',
+			type : 'hidden'
+		});
+		this.btnid.inject(this.uploadform);
+		this.uploadfile.addEvent("change", function() {
+			// CheckExt(this);
+				$('uploadform').submit();
+			});
+
+		this.iframe_doupload.addEvent('load', function() {
+			var r = this.contentWindow.document.body.innerHTML;
+			if (r) {
+				if (r.indexOf('{') >= 0) {
+					var t = JSON.decode(r) || {};
+					switch (t.showtype) {
+
+					case 'picture':
+						if (t.shownum == 0) {
+							if ($(t.showcontainer)) {
+								var vdiv = new Element('div').set('class',
+										'show_div');
+								vdiv.inject($(t.showcontainer));
+
+								//var va = new Element('a',{'href':'/showimg.html?'+t.fname,'target':'_blank'});
+								//va.inject(vdiv);
+								
+								(new Element('img', {
+									'class' : 'show_img',
+									'styles' : {
+										'width' : 40,
+										'height' : 40
+									},
+									'id' : t.fname,
+									'src' : '/imageshow.jsp?path='+t.savepath+'\\\\'+t.fname
+								})).inject(vdiv);
+
+								(new Element('img', {
+									'class' : 'show_del',
+									'src' : '/images/laji.gif'
+								})).addEvent('click', function() {
+									this.getParent().destroy();
+								}).inject(vdiv);
+
+							} else {
+								var vshowcontainer = new Element('div').set(
+										'class', 'show_container');
+								vshowcontainer.inject($(t.btnid),
+										'before');
+
+								var vdiv = new Element('div').set('class',
+										'show_div');
+								vdiv.inject(vshowcontainer);
+								
+								//var va = new Element('a',{'href':'/showimg.html?'+t.fname,'target':'_blank'});
+								//va.inject(vdiv);
+								
+								(new Element('img', {
+									'class' : 'show_img',
+									'styles' : {
+										'width' : 40,
+										'height' : 40
+									},
+									'id' : t.fname,
+									'src' : '/imageshow.jsp?path='+t.savepath+'\\\\'+ t.fname
+								})).inject(vdiv);
+
+								(new Element('img', {
+									'class' : 'show_del',
+									'src' : '/images/laji.gif'
+								})).addEvent('click', function() {
+									this.getParent().destroy();
+								}).inject(vdiv);
+
+							}
+
+							(new Element('input', {
+								name : t.dbname,
+								id : t.dbname,
+								type : 'hidden',
+								value : t.dbvalue
+							})).inject($(t.btnid), 'before');
+
+							$('uploadfile').set( {
+								'styles' : {
+									'position' : 'absolute',
+									'top' : 0,
+									'left' : 0
+
+								}
+							});
+						} else {
+							if ($(t.showcontainer)) {
+								$(t.showcontainer).set('src','/imageshow.jsp?path='+t.savepath+'\\\\'+t.fname)
+								//$(t.showcontainer).empty();
+								//var vdiv = new Element('div').set('class',
+									//	'show_div');
+								//vdiv.inject($(t.showcontainer));
+
+								//var va = new Element('a',{'href':'/showimg.html?'+t.fname,'target':'_blank'});
+								//va.inject(vdiv);
+								
+								//(new Element('img', {
+									//'class' : 'show_img',
+									//'styles' : {
+									//	'width' : 40,
+									//	'height' : 40
+									//},
+									//'id' : t.fname,
+									//'src' : '/img/' + t.fname
+								//})).inject(va);
+
+								//(new Element('img', {
+								//	'class' : 'show_del',
+								//	'src' : '/images/laji.gif'
+								//})).addEvent('click', function() {
+								//	this.getParent().destroy();
+								//}).inject(vdiv);
+
+							} else {
+								var vshowcontainer = new Element('div'
+										 );
+							vshowcontainer.inject($(t.btnid),
+										'before');
+
+								//var vdiv = new Element('div').set('class',
+								//		'show_div');
+								//vdiv.inject(vshowcontainer);
+								
+								var va = new Element('a',{'href':'/showimg.html?'+t.fname,'target':'_blank'});
+								va.inject(vshowcontainer);
+								
+								(new Element('img', {
+									'class' : 'show_img',
+									'styles' : {
+										'width' : 40,
+										'height' : 40
+									},
+									'id' : t.showcontainer,
+									'src' : '/imageshow.jsp?path='+t.savepath+'\\\\'+t.fname
+								})).inject(va);
+							if (($(t.btnid).getNext())&&$(t.btnid).getNext().getProperty('name')==t.dbname&&$(t.btnid).getNext().tagName=="INPUT") {
+								$(t.btnid).getNext().value = t.dbvalue;
+							} else {
+								(new Element('input', {
+									name : t.dbname,
+									id : t.dbname,
+									type : 'hidden',
+									value : t.dbvalue
+								})).inject($(t.showcontainer), 'after');
+							}
+								(new Element('img', {
+									'class' : 'show_del',
+									'src' : '/images/laji.gif'
+								})).addEvent('click', function() {
+									this.getParent().destroy();
+								}).inject(vshowcontainer);
+
+							}
+
+							/*
+							 * (new Element('input', { 'class':'delpic', name :
+							 * t.dbname+'del', id : t.dbname+'del', type : 'button',
+							 * value : '删除'
+							 * })).inject($(t.showcontainer)).addEvent("click",
+							 * function() { $(t.fname).destroy();
+							 * //$(t.dbname).destroy(); $(t.dbname).value="请点击这里上传";
+							 * $(t.dbname+'del').destroy(); });
+							 */
+
+							$('uploadfile').set( {
+								'styles' : {
+									'position' : 'absolute',
+									'top' : 0,
+									'left' : 0
+
+								}
+							});
+						}
+						break;
+				      case 'document':
+						if (t.shownum == 0) {
+							if ($(t.showcontainer)) {
+								var vdiv = new Element('div').set('class',
+										'show_div');
+								vdiv.inject($(t.showcontainer));
+
+								var va = new Element('a',{'href': '/img/' + t.fname,'target':'_blank'});
+								va.inject(vdiv);
+								
+								va.set('text',t.dbvalue.split('*')[1]);
+
+								(new Element('img', {
+									'class' : 'show_del',
+									'src' : '/images/laji.gif'
+								})).addEvent('click', function() {
+									this.getParent().destroy();
+								}).inject(vdiv);
+
+							} else {
+								var vshowcontainer = new Element('div').set(
+										'class', 'show_container');
+								vshowcontainer.inject($(t.btnid),
+										'before');
+
+								var vdiv = new Element('div').set('class',
+										'show_div');
+								vdiv.inject(vshowcontainer);
+								
+								var va = new Element('a',{'href': '/img/' + t.fname,'target':'_blank'});
+								va.inject(vdiv);
+								
+								va.set('text',t.dbvalue.split('*')[1]);
+
+								(new Element('img', {
+									'class' : 'show_del',
+									'src' : '/images/laji.gif'
+								})).addEvent('click', function() {
+									this.getParent().destroy();
+								}).inject(vdiv);
+
+							}
+
+							(new Element('input', {
+								name : t.dbname,
+								id : t.dbname,
+								type : 'hidden',
+								value : t.dbvalue
+							})).inject($(t.btnid), 'before');
+
+							$('uploadfile').set( {
+								'styles' : {
+									'position' : 'absolute',
+									'top' : 0,
+									'left' : 0
+
+								}
+							});
+						} else {
+							if ($(t.showcontainer)) {
+								$(t.showcontainer)
+										.set('src', '/img/' + t.fname);
+							} else {
+								(new Element('img', {
+									'styles' : {
+										width : 30,
+										height : 30,
+										margin : 10
+									},
+									'id' : t.fname,
+									'src' : '/img/' + t.fname
+								})).set('class', 'showpic').inject(
+										$(t.btnid), 'before');
+							}
+							if ($(t.dbname)) {
+								$(t.dbname).value = t.dbvalue;
+							} else {
+								(new Element('input', {
+									name : t.dbname,
+									id : t.dbname,
+									type : 'hidden',
+									value : t.dbvalue
+								})).inject($(t.btnid), 'before');
+							}
+							/*
+							 * (new Element('input', { 'class':'delpic', name :
+							 * t.dbname+'del', id : t.dbname+'del', type : 'button',
+							 * value : '删除'
+							 * })).inject($(t.showcontainer)).addEvent("click",
+							 * function() { $(t.fname).destroy();
+							 * //$(t.dbname).destroy(); $(t.dbname).value="请点击这里上传";
+							 * $(t.dbname+'del').destroy(); });
+							 */
+
+							$('uploadfile').set( {
+								'styles' : {
+									'position' : 'absolute',
+									'top' : 0,
+									'left' : 0
+
+								}
+							});
+						}
+						break;
+					default:
+						if ($(t.showcontainer)) {
+							$(t.showcontainer).set('text',
+									t.dbvalue.split('*')[1]);
+						} else {
+							(new Element('span', {
+								'class' : 'showtxt',
+								id : t.showcontainer,
+								text : t.dbvalue.split('*')[1]
+							})).inject($(t.btnid), 'before');
+						}
+						// $(t.dbname).value=t.dbvalue;
+				// $(t.dbname).set('readonly',true);
+				if ($(t.dbname))
+					$(t.dbname).destroy();
+				(new Element('input', {
+					styles : {
+						width : 0,
+						height : 0,
+						border : 0
+					},
+					name : t.dbname,
+					id : t.dbname,
+					type : 'hidden',
+					value : t.dbvalue
+				})).inject($(t.btnid), 'before');
+				/*
+				 * (new Element('input', { 'class':'deltxt', name :
+				 * t.dbname+'del', id : t.dbname+'del', type : 'button', value :
+				 * '删除' })).inject($(t.showcontainer)).addEvent("click",
+				 * function() { $(t.fname).destroy();
+				 * //$(t.dbname).value="请点击这里上传"; //$(t.dbname+'del').destroy();
+				 * });
+				 */
+
+				$('uploadfile').set( {
+					'styles' : {
+						'position' : 'absolute',
+						'top' : 0,
+						'left' : 0
+					}
+				});
+				break;
+
+			}
+
+		} else {
+			alert(this.contentWindow.document.body.innerHTML);
+		}
+	}
+}		);
+
+		this.form = obj;
+		this.form.addEvent("submit", this.submit.bindWithEvent(this));
+		this.form.getElements("input,select,textarea").each(function(element) {
+
+			var json = JSON.decode(element.getProperty("datetype")) || {};
+
+			//if ($chk(json.isnotnull)) {
+			//	this.options.notnull.include(element);
+			//}
+			if ($chk(json.readonly)) {
+				element.set('readonly', true);
+			}
+			switch (json.type) {
+			case "number":
+				new myNumber(element);
+				break;
+			case "char":
+				new myChar(element);
+				break;
+			case "date":
+				new myDate(element, json.flag);
+				break;
+			case "simpledate":
+				new mySimpleDate(element);
+				break;
+			case "select":
+				new mySelect('t1', element);
+				break;
+			case "file":
+				new myFile(element);
+				break;
+			default:
+				new INPUT(element);
+				break;
+			}
+
+		}, this);
+	},
+	submit : function() {
+		    var _options = this.options;
+		    _options.notnull.empty();
+			this.form.getElements("input,select,textarea").each(function(element) {
+
+			var json = JSON.decode(element.getProperty("datetype")) || {};
+
+			if ($chk(json.isnotnull)) {
+				_options.notnull.include(element);
+			}
+			});
+			this.options = _options;
+		for (i = 0; i < this.options.notnull.length; i++) {
+			var el = this.options.notnull[i];
+
+			if (el.get('type') == 'button') {
+				if (!$chk($(el.id.split('_')[0]))
+						|| $(el.id.split('_')[0]).value.length <= 0) {
+					alert("请填写" + el.title + "！");
+					el.focus();
+					return false;
+				}
+			} 			else if (el.get('name').indexOf('_sl')>=0) {
+				if (!$chk($(el.id.split('_')[0]))
+						|| $(el.id.split('_')[0]).value.length <= 0) {
+					alert("请填写" + el.title + "！");
+					el.focus();
+					return false;
+				}
+			}
+			else {
+				if (el.value.length <= 0) {
+					alert("请填写" + el.title + "！");
+					el.focus();
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+});
+var INPUT = new Class( {
+	Implements : [ Events, Options, INPUT ],
+	options : {
+		test : ""
+	},
+
+	initialize : function(obj) {
+		
+		if($(obj).tag=='input'){
+			obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+		}
+		
+	},
+	keydown : function(evt) {
+
+		if (evt.code == 13) {
+			if (evt.target.getNext())
+				evt.target.getNext().focus();
+			evt.preventDefault();
+		}
+	}
+});
+// 数字处理
+var myNumber = new Class(
+		{
+			Implements : [ Events, Options, INPUT ],
+			options : {
+				test : ""
+			},
+
+			initialize : function(obj) {
+				obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+				obj.addEvent("blur", this.check.bind(this, obj));
+			},
+			check : function(obj) {
+
+				var maxlength = (JSON.decode(obj.getProperty("datetype")) || {}).maxlength;
+				var precious = (JSON.decode(obj.getProperty("datetype")) || {}).precious;
+
+				if (maxlength < obj.value.length) {
+					alert(obj.title + "输入过长！最大长度" + maxlength);
+					obj.value = obj.value.substring(0, maxlength);
+					return false;
+				}
+				var reg = "";
+				if (precious && precious > 0) {
+					reg = "^-?\\d{1," + (maxlength - precious - 1) + "}\\.?\\d{0,"
+							+ precious + "}$";
+				} else {
+					reg = "^-?\\d{1," + maxlength + "}$";
+				}
+				// alert(reg);
+				if (obj.value.length > 0 && !obj.value.test(reg)) {
+
+					alert(obj.title + "请正确输入！必须是数字,最大长度" + maxlength + "小数点保留"
+							+ precious + "位。");
+					obj.value = "";
+					obj.focus();
+				}
+			}
+		});
+// 字符串处理
+var myChar = new Class(
+		{
+			Implements : [ Events, Options, INPUT ],
+			options : {
+				test : ""
+			},
+
+			initialize : function(obj) {
+			if($(obj).tag=='input'){
+			obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+		}
+				obj.addEvent("blur", this.check.bind(this, obj));
+			},
+			check : function(obj) {
+				var maxlength = (JSON.decode(obj.getProperty("datetype")) || {}).maxlength;
+				if (maxlength < obj.value.length) {
+					alert(obj.title + "输入过长！");
+					obj.value = obj.value.substring(0, maxlength);
+				}
+				if ((JSON.decode(obj.getProperty("datetype")) || {}).format) {
+                      var reg = (JSON.decode(obj.getProperty("datetype")) || {}).format;
+					if (obj.value.length > 0 && !obj.value.test(reg)) {
+						alert(obj.title + "请正确输入！");
+						obj.value = "";
+						obj.focus();
+					}
+				}
+			}
+		});
+// 字符串处理
+var myFile = new Class( {
+	Implements : [ Events, Options, INPUT ],
+	options : {
+		test : ""
+	},
+
+	initialize : function(obj) {
+		var el = obj
+		obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+		var json = JSON.decode(el.getProperty("datetype")) || {};
+		el.addEvent('mouseenter', function(evt) {
+			var obj = $('uploadfile');
+			var offset = {};
+
+			offset.top = $(evt.target).getPosition().y;
+			offset.left = $(evt.target).getPosition().x;
+
+			obj.set( {
+				'styles' : {
+					'position' : 'absolute',
+					'top' : offset.top,
+					'left' : offset.left,
+					'width' : $(evt.target).getStyle('width').toInt()
+				},
+				maxsize : json.maxsize,
+				fext : json.fext
+			});
+
+			$('maxsize').value = json.maxsize;
+			$('fext').value = json.fext;
+			$('dbname').value = el.id.split('_')[0];
+			$('showtype').value = json.showtype;
+			$('showcontainer').value = json.showcontainer;
+			$('savepath').value = json.savepath;
+			$('shownum').value = json.shownum;
+			$('btnid').value = el.id;
+		});
+
+	}
+});
+// 日期处理
+var mySimpleDate = new Class( {
+	Implements : [ Events, Options, INPUT ],
+	options : {
+		test : ""
+	},
+
+	initialize : function(obj) {
+		obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+		obj.addEvent("blur", this.checkdate.bind(this, obj));
+	},
+	checkdate : function(obj) {
+		var reg = (JSON.decode(obj.getProperty("datetype")) || {}).format;
+
+		if (obj.value.length > 0 && !obj.value.test(reg)) {
+			alert(obj.title + "请正确输入！");
+			obj.value = "";
+			obj.focus();
+		}
+	}
+
+});
+var myDate = new Class(
+		{
+			Implements : [ Events, Options, INPUT ],
+			options : {
+				test : ""
+			},
+
+			initialize : function(obj, flag) {
+				obj.addEvent("keydown", this.keydown.bindWithEvent(this));
+				obj
+						.addEvent("blur", this.convertDate.bind(this, [ obj,
+								flag ]));
+			},
+			IsNumber : function(string, sign) {
+				var number;
+				if (string == null)
+					return false;
+				if ((sign != null) && (sign != "-") && (sign != "+")) {
+					alert("IsNumber(string,sign)的参数出错： sign为null或-或+");
+					return false;
+				}
+				number = new Number(string);
+				if (isNaN(number)) {
+					return false;
+				} else if ((sign == null) || (sign == "-" && number < 0)
+						|| (sign == "+" && number > 0)) {
+					return true;
+				} else
+					return false;
+			},
+			getCoolDate : function(oStarDate) {
+				if (oStarDate.length == 6) {
+					if (oStarDate.substr(0, 1) == "0") {
+						oStarDate = "20" + oStarDate;
+					}
+				}
+
+				var tmpy;
+				var tmpm;
+				var tmpd;
+
+				tmpy = oStarDate.substr(0, 4);
+				tmpm = oStarDate.substr(4, 2);
+				tmpd = oStarDate.substr(6, 2);
+
+				oStarDate = tmpy + "-" + tmpm + "-" + tmpd
+
+				return oStarDate;
+			},
+			isTime : function(value, DilimeterIn) {
+				if (value.indexOf(" ") != -1) {
+					return false;
+				}
+				if (DilimeterIn == ":") {
+					var split;
+					var hour;
+					var minute;
+					split = value.split(DilimeterIn);
+					if (split.length != 2) {
+						return false;
+					}
+					hour = split[0];
+					minute = split[1];
+
+					if (hour.lenght > 2 || minute.lenght > 2) {
+						return false;
+					}
+					if (IsNumber(hour, null) == false
+							|| IsNumber(minute, null) == false) {
+						return false;
+					}
+					if (hour > 23) {
+						return false;
+					}
+					if (minute > 59) {
+						return false;
+					}
+
+					return true;
+				}
+			},
+			IsDate : function(DateString, DilimeterIn) {
+				var str = DateString;
+				if (str.length == 0)
+					return true;
+
+				var arList = str.split(DilimeterIn)
+				if (arList.length != 3) {
+					return false;
+				}
+
+				var iYear = parseInt(arList[0], 10);
+				var iMonth = parseInt(arList[1], 10);
+				var iDay = parseInt(arList[2], 10);
+
+				if (isNaN(iYear) || isNaN(iMonth) || isNaN(iDay)) {
+					return false;
+				}
+
+				if (iYear < 1900 || iYear > 2099) {
+					return false;
+				}
+
+				if (iMonth > 12 || iMonth < 1) {
+					return false;
+				}
+
+				if ((iMonth == 1 || iMonth == 3 || iMonth == 5 || iMonth == 7
+						|| iMonth == 8 || iMonth == 10 || iMonth == 12)
+						&& (iDay > 31 || iDay < 1)) {
+					return false;
+				}
+
+				if ((iMonth == 4 || iMonth == 6 || iMonth == 9 || iMonth == 11)
+						&& (iDay > 30 || iDay < 1)) {
+					return false;
+				}
+
+				if (iMonth == 2) {
+					if (this.LeapYear(iYear)) {
+						if (iDay > 29 || iDay < 1) {
+							return false;
+						}
+					} else {
+						if (iDay > 28 || iDay < 1) {
+							return false;
+						}
+					}
+				}
+				return true;
+
+			},
+			LeapYear : function(intYear) {
+				if (intYear % 100 == 0) {
+					if (intYear % 400 == 0) {
+						return true;
+					}
+				} else {
+					if ((intYear % 4) == 0) {
+						return true;
+					}
+				}
+				return false;
+			},
+			convertDate : function(args, args1) {
+
+				// Flag格式参数--0代表年月日,1代表年月日小时,2代表年月日小时分钟,3代表年月
+				var mytime;
+				var mydate;
+				var oStarDate;
+				var Flag = args1;
+
+				oStarDate = args.value;
+
+				if (oStarDate.length == 0) {
+					return true;
+				}
+
+				var tmpdate1;
+				var tmpdate2;
+				tmpdate1 = oStarDate + "-01";
+				tmpdate2 = oStarDate + "/01";
+
+				if (oStarDate.indexOf(" ") != -1) {
+					mytime = oStarDate.substr(oStarDate.indexOf(" ") + 1,
+							oStarDate.length - oStarDate.indexOf(" "));
+					mydate = oStarDate.substr(0, oStarDate.indexOf(" "));
+
+					if (mytime.indexOf(":") == -1 && Flag == 1) {
+						mytime = mytime + ":00";
+					} else if (mytime.indexOf(":") != -1 && Flag == 1) {
+						mytime = "";
+					}
+
+					if ((this.IsDate(mydate, "-") == true || this.IsDate(
+							mydate, "/") == true)
+							&& this.isTime(mytime, ":") == true) {
+						return true;
+					} else {
+						alert(args.title + "输入错误！");
+						args.value = "";
+						args.focus();
+						return false;
+					}
+				} else if ((this.IsDate(oStarDate, "-") == true || this.IsDate(
+						oStarDate, "/") == true)
+						&& Flag == 0) {
+					return true;
+				} else if ((this.IsDate(tmpdate1, "-") == true || this.IsDate(
+						tmpdate2, "/") == true)
+						&& Flag == 3) {
+					return true;
+				} else {
+					if (this.IsNumber(oStarDate, "+") == true) {
+						if (((oStarDate.substr(0, 1) != "0" && oStarDate.length == 8) || oStarDate.length == 6)
+								&& Flag == 0) {
+							oStarDate = this.getCoolDate(oStarDate);
+
+							if (this.IsDate(oStarDate, "-")) {
+								args.value = oStarDate;
+								return true;
+							} else {
+								alert(args.title + "输入错误！");
+								args.value = "";
+								args.focus();
+								return false;
+							}
+						} else if ((oStarDate.length == 12 || (oStarDate.length == 10 && oStarDate
+								.substr(0, 1) == "0"))
+								&& Flag == 2) {
+							mydate = oStarDate.substr(0, oStarDate.length - 4);
+							mytime = oStarDate.substr(oStarDate.length - 4, 4);
+
+							mydate = this.getCoolDate(mydate);
+							mytime = mytime.substr(0, 2) + ":"
+									+ mytime.substr(2, 2);
+
+							if (this.IsDate(mydate, "-") == true
+									&& this.isTime(mytime, ":") == true) {
+								args.value = mydate + " " + mytime;
+								return true;
+							} else {
+								alert(args.title + "输入错误！");
+								args.value = "";
+								args.focus();
+								return false;
+							}
+						} else if (((oStarDate.substr(0, 1) != "0" && oStarDate.length == 10) || (oStarDate
+								.substr(0, 1) == "0" && oStarDate.length == 8))
+								&& Flag == 1) {
+
+							var hour;
+							mydate = oStarDate.substr(0, oStarDate.length - 2);
+							hour = oStarDate.substr(oStarDate.length - 2, 2);
+
+							mydate = this.getCoolDate(mydate);
+							mytime = hour + ":" + "00";
+
+							if (this.IsDate(mydate, "-") == true
+									&& this.isTime(mytime, ":") == true) {
+								args.value = mydate + " " + hour;
+								return true;
+							} else {
+								alert(args.title + "输入错误！");
+								args.value = "";
+								args.focus();
+								return false;
+							}
+						} else if (((oStarDate.substr(0, 1) != "0" && oStarDate.length == 6) || (oStarDate
+								.substr(0, 1) == "0" && oStarDate.length == 4))
+								&& Flag == 3) {
+							var tmpmydate;
+							var myyear;
+							var mymonth;
+							myyear = oStarDate.substr(0, oStarDate.length - 2);
+							mymonth = oStarDate.substr(oStarDate.length - 2, 2);
+
+							if (myyear.length == 2) {
+								mydate = "20" + myyear + "-" + mymonth + "-01";
+								tmpmydate = "20" + myyear + "-" + mymonth;
+							} else {
+								mydate = myyear + "-" + mymonth + "-01";
+								tmpmydate = myyear + "-" + mymonth;
+							}
+
+							if (this.IsDate(mydate, "-") == true) {
+								args.value = tmpmydate;
+								return true;
+
+							} else {
+								alert(args.title + "输入错误！");
+								args.value = "";
+								args.focus();
+								return false;
+							}
+						} else {
+							alert(args.title + "输入错误！");
+							args.value = "";
+							args.focus();
+							return false;
+						}
+					} else {
+						alert(args.title + "输入错误！");
+						args.value = "";
+						args.focus();
+						return false;
+					}
+				}
+			}
+
+		});
+
+// 下拉菜单
+var mySelect = new Class(
+		{
+
+			Implements : [ Events, Options ],
+
+			options : {
+				hiddenflag : true,
+				divopen : true
+			},
+
+			initialize : function(id, obj) {
+
+				this.DivResult = null;
+				this.current = null;
+				this.handle = obj
+				this.data = null;
+
+				var rurl = "";
+				var me = this;
+				// 自动完成绑定控件客户端ID
+
+				var json = JSON.decode(obj.getProperty("datetype")) || {};
+
+				if (json.readonly) {
+					obj.set('readonly', true);
+				}
+				this.dbname = obj.id.split('_')[0];
+				if (!$chk($(this.dbname))) {
+					(new Element('input', {
+						styles : {
+							width : 0,
+							height : 0,
+							border : 0
+						},
+						name : this.dbname,
+						id : this.dbname,
+						type : 'hidden'
+					})).inject(obj, 'before');
+				}
+				this.top = obj.getPosition().y;
+				this.left = obj.getPosition().x;
+				this.width = obj.getSize().x;
+				this.height = obj.getSize().y - 2;
+				obj.set("class", "select_div_container");
+				this.url = JSON.decode(obj.attributes["datetype"].nodeValue).url
+						.split("?");
+
+				// this.DivResult.addEvent("click",
+				// this.divclick.bindWithEvent(this));
+				obj.addEvent("click", this.fclick.bindWithEvent(this));
+				obj.addEvent("focus", this.fclick.bindWithEvent(this));
+				obj.addEvent("blur", this.fblur.bindWithEvent(this));
+				obj.addEvent("keydown", this.fkeyup.bindWithEvent(this));
+
+				// obj.addEvent("keydown", this.fkeydown.bindWithEvent(this));
+				// this.DivResult.addEvent("mouseleave",
+				// this.fblur.bindWithEvent(this));
+
+			},
+
+			getlist : function() {
+				var _this = this;
+				var _this = this;
+				var turl = _this.url;
+				var rurl = "";
+				if (turl.length > 1) {
+					rurl = rurl + turl[0] + "?";
+					var tu = turl[1].split("&");
+
+					for (i = 0; i < tu.length; i++) {
+						if ($(tu[i].split("=")[1])) {
+							rurl = rurl
+									+ tu[i].split("=")[0]
+									+ "="
+									+ $(tu[i].split("=")[1]).value + "&";
+						} else {
+							rurl = rurl + tu[i] + "&";
+						}
+					}
+
+				} else {
+					rurl = turl;
+				}
+
+				var tt = new Request.JSON( {
+					"url" : rurl,
+					"async" : false,
+					"onSuccess" : function(js, txt) {
+
+						_this.data = js.row;
+
+					}
+				}).get( {});
+
+				if ($("uUlchild")) {
+					$("uUlchild").destroy();
+				}
+				var tdata = _this.data;
+				this.DivResult = new Element("ul", {
+					"id" : "uUlchild",
+					"styles" : {
+						"list-style-type" : "none",
+						"width" : "100%",
+						// "border": "solid 1px red",
+						"margin" : 0,
+						"padding" : 0,
+						"height" : "200px",
+						"overflow-y" : "scroll",
+						"overflow-x" : "hidden"
+					}
+
+				});
+				var parent = this.handle.getParent();
+				if (typeof (parent) != "undefined") {
+					this.DivResult.inject(parent);
+				}
+				this.DivResult.setStyle("position", "absolute");
+				this.DivResult.setStyle("top", this.top + this.height);
+				this.DivResult.setStyle("left", this.left);
+				this.DivResult.setStyle("width", this.width);
+				this.DivResult.setStyle("z-index", "200");
+				this.DivResult.setStyle("backgroundColor", "#ffffff");
+				// this.DivResult.setStyle("overflow", "scroll");
+				this.DivResult.setStyle("border", "solid 1px red");
+				this.DivResult
+						.addEvent(
+								"mousemove",
+								function(evt) {
+									// $('ss').set('text',(_this.handle.getPosition().x+_this.DivResult.clientWidth)+','+evt.event.x+','+_this.left+'-'+_this.width);
+									if ((_this.handle.getPosition().x + _this.DivResult.clientWidth) < evt.event.x
+											&& (_this.handle.getPosition().x + _this.DivResult
+													.getSize().x) > evt.event.x) {
+										_this.options.divopen = false;
+									} else {
+										_this.options.divopen = true;
+									}
+									// $('ss').set('text',_this.options.divopen);
+								});
+				for ( var i = 0; i < tdata.length; i++) {
+					// 将原始的select标签中的options添加到li中
+					var lLi = new Element("li", {
+						"id" : tdata[i].col[0].value,
+						// "tabindex":"0",
+						"styles" : {
+							"list-style-type" : "none",
+							"width" : "100%",
+							"border" : "solid 1px red",
+							"height" : "20px"
+						}
+					});
+					lLi.appendText(tdata[i].col[1].value);
+					lLi.inject(this.DivResult);
+					lLi.addEvent('mouseover', function() {
+
+						if (_this.current) {
+							_this.current.style.background = "white";
+							_this.current.style.color = "black";
+						}
+						_this.current = this;
+						this.style.background = "gray";
+						this.style.color = "white";
+						_this.options.hiddenflag = false;
+					});
+					lLi.addEvent('mouseleave', function() {
+
+						this.style.background = "white";
+						this.style.color = "black";
+						_this.options.hiddenflag = true;
+					});
+					lLi.addEvent('click', function() {
+						_this.current = this;
+						_this.Select();
+					});
+					// lLi.onfocus = function()
+					// {
+					// _this.current = this;
+					// }
+					// lLi.addEvent("keyup", this.fkeyup.bindWithEvent(this));
+					// lLi.addEvent("keydown",
+					// this.fkeydown.bindWithEvent(this));
+				}
+				this.ShowResult();
+				this.current = $("uUlchild").getFirst();
+				this.current.style.backgroundColor = "gray";
+				this.current.style.color = "white";
+
+			},
+			ShowResult : function() {
+				this.DivResult.style.display = "";
+
+			},
+			SelectItem : function(evt) {
+
+				if (evt.code == 38) {
+					if ($("uUlchild").getFirst() == this.current) {
+
+					} else {
+
+						this.current.style.background = "white";
+						this.current.style.color = "black";
+						this.current = this.current.getPrevious();
+						this.current.style.backgroundColor = "gray";
+						this.current.style.color = "white";
+						// alert(this.current.getPrevious().get("text"));
+			// this.current.focus();
+			// $("uUlchild").scrollTo(0, 1);
+			if (this.current.getPosition().y < 60) {
+				$("uUlchild").scrollTo(0, $("uUlchild").getScroll().y - 40);
+			}
+		}
+	}
+	// 向下
+	if (evt.code == 40) {
+		if ($("uUlchild").getLast() == this.current) {
+
+		} else {
+
+			this.current.style.background = "white";
+
+			this.current.style.color = "black";
+
+			this.current = this.current.getNext();
+
+			this.current.style.backgroundColor = "gray";
+
+			this.current.style.color = "white";
+
+			// this.current.focus();
+			// $("test").value = this.DivResult.getPosition().y + "-" +
+			// this.current.getPosition().y + "$" +
+			// $("uUlchild").getScrollSize().x + "-" +
+			// $("uUlchild").getScrollSize().y + "$" +
+			// $("uUlchild").getScroll().x + "-" + $("uUlchild").getScroll().y +
+			// "$" + $("uUlchild").getSize().x + "-" +
+			// $("uUlchild").getSize().y;
+			// $("uUlchild").scrollTo(this.current.getPosition().x,this.current.getPosition().y);
+			if (this.current.getPosition().y > 200) {
+				$("uUlchild").scrollTo(0, $("uUlchild").getScroll().y + 40);
+			}
+			// $("uUlchild").scrollTo(0, this.current.getPosition().y + 40 -
+			// this.DivResult.getPosition().y - $("uUlchild").getSize().y);
+			// $("uUlchild").scrollTo(0, 1);
+		}
+	}
+
+},
+Select : function() {
+	if (this.options.divopen) {
+		if (this.current) {
+			$(this.dbname).value = this.current.get("id");
+			this.handle.value = this.current.get("text");
+			this.handle.setProperty("idvalue", this.current.getProperty("id"));
+		}
+		this.InitItem();
+		// this.handle.focus();
+		}
+	},
+	InitItem : function() {
+
+		this.DivResult.destroy();
+		this.current = null;
+		this.options.hiddenflag = true;
+	},
+	divclick : function(evt) {
+		// evt.preventDefault();
+			try {
+				this.Select();
+			} catch (e) {
+			}
+		},
+		fclick : function(evt) {
+
+			try {
+				this.getlist();
+			} catch (e) {
+
+			}
+		},
+		fkeyup : function(evt) {
+
+			try {
+				if (evt.code == 38 || evt.code == 40 || evt.code == 13) {
+					if (evt.code == 13) {
+						if ($("uUlchild")) {
+							evt.preventDefault();
+							this.Select()
+
+						} else {
+							evt.preventDefault();
+							if (evt.target.getNext())
+								evt.target.getNext().focus();
+
+						}
+					}
+					if (evt.code == 38 && $("uUlchild")) {
+						this.SelectItem(evt);
+					}
+					if (evt.code == 40) {
+						if (!$("uUlchild")) {
+							this.getlist();
+						} else {
+							this.SelectItem(evt);
+						}
+					}
+
+				}
+
+			} catch (e) {
+			}
+		},
+		fkeydown : function(evt) {
+
+			if (evt.code == 13) {
+				if (this.DivResult.style.display == 'none') {
+					if (evt.target.getNext())
+						evt.target.getNext().focus();
+					evt.preventDefault();
+				} else {
+					try {
+						this.Select()
+						evt.preventDefault();
+					} catch (e) {
+					}
+				}
+			}
+		},
+		fblur : function(evt) {
+
+			if (this.options.divopen) {
+
+				if ($("uUlchild") && this.options.hiddenflag) {
+					this.InitItem();
+				}
+			}
+
+		}
+
+		});
+
+function addcheck(obj) {
+	var chkvalue = '';
+	var tchkname = eval("document.forms[0].t" + obj.name.substring(1));
+	var chkname = eval("document.forms[0]." + obj.name.substring(1));
+	var len = tchkname.length;
+	if (len > 1) {
+		for ( var i = 0; i < len; i++) {
+			if (tchkname[i].checked)
+				chkvalue += tchkname[i].value + ';';
+		}
+	}
+	chkname.value = chkvalue;
+}

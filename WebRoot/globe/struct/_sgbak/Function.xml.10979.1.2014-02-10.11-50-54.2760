@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<Content>
+<!-- 在这里面实现特殊的功能，按照以前老架构的方法  -->
+	<Function>
+		<FunctionId>F00.01.00.01</FunctionId>
+		<ActionName>com.arch.work.forecast.UpdateForecastActiveAction</ActionName>
+		<SuccessPage>/success.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+	<Function>
+		<FunctionId>F00.01.00.02</FunctionId>
+		<ActionName>com.arch.work.forecast.UpdateForecastMultipleAction</ActionName>
+		<SuccessPage>/success.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+        <Function>
+		<FunctionId>F00.01.00.03</FunctionId>
+		<ActionName>com.arch.work.forecast.UpdateForecastAlarmAction</ActionName>
+		<SuccessPage>/success.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+        <Function>
+		<FunctionId>F00.01.00.11</FunctionId>
+		<ActionName>com.arch.work.forecast.QueryParamByStation</ActionName>
+		<SuccessPage>/Iems/WebMain/Forecast/F_RealDataQuery.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+        <Function>
+		<FunctionId>F00.01.00.12</FunctionId>
+		<ActionName>com.arch.work.forecast.QueryForecastSum</ActionName>
+		<SuccessPage>/Iems/WebMain/Forecast/F_RealDataShow.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+        <Function>
+                <FunctionId>F00.01.00.13</FunctionId>
+		<ActionName>com.arch.work.forecast.QueryTemplateAction</ActionName>
+		<SuccessPage>/Iems/WebMain/Forecast/successForecast.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+        </Function>
+        <Function>
+                <FunctionId>F00.01.00.14</FunctionId>
+		<ActionName>com.arch.work.forecast.DeleteTemplateAction</ActionName>
+		<SuccessPage>/Iems/WebMain/Forecast/queryTemplate.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+        </Function>
+         <Function>
+		<FunctionId>F00.01.00.18</FunctionId>
+		<ActionName>com.arch.work.forecast.AlarmDataQueryAction</ActionName>
+		<SuccessPage>/Iems/WebMain/Forecast/F_AlarmDataShow.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+	         <Function>
+		<FunctionId>F00.01.00.19</FunctionId>
+		<ActionName>com.arch.work.accident.CreateAccidentInfoAction</ActionName>
+		<SuccessPage>WebRoot/Iems/WebMain/Accident/success.jsp</SuccessPage>
+		<FaultPage>/fault.jsp</FaultPage>
+	</Function>
+        <Function>
+		<FunctionId>F00.01.00.05</FunctionId>
+		<ActionName>com.arch.work.forecast.SetListAction</ActionName>
+		<SuccessPage>/success.jsp</SuccessPage>
+		<FaultPage>/WebRoot/Iems/WebMain/SetList.jsp</FaultPage>
+	</Function>
+</Content>

@@ -1,0 +1,75 @@
+*{
+	margin:0;
+	padding:0;
+}
+body{
+	font-size:12px;
+	background:url(../images/tan-texture.png);
+	font-family:"΢���ź�",Arial,Helvetica,sans-serif;
+	color:#444133;
+}
+ul {
+list-style:none;
+
+}
+img{
+	border:none;
+}
+.clear{
+	clear:both;
+	height:0px;
+}
+table{
+	border-collapse:collapse;
+}
+input{
+	padding:5px;
+	border:1px solid #ABABAB;
+}
+.border_top{
+	border-top:1px solid #ABABAB;
+}
+.border_bot{
+	border-bottom:1px solid #ABABAB;
+}
+.font_normal{
+	font-weight:normal;
+}
+.font_bord{
+	font-weight:bold;
+}
+.fontsize_14{
+	font-size:14px;
+}
+.gray{
+	color:#666;
+}
+.black{
+	color:#000;
+}
+.red{
+	color:#f00;
+}
+.img_box1{
+	display:inline-block;
+	width:80px;
+	overflow-x:hidden;
+	padding:5px;
+	border:1px solid #ababab;
+}
+.img_box1 img{
+	height:60px;
+}
+.img_box2{
+	display:inline-block;
+	width:240px;
+	overflow-x:hidden;
+	padding:5px;
+	border:1px solid #ababab;
+}
+.img_box2 img{
+	height:180px;
+}
+.bac_white{
+	background:#fff;
+}

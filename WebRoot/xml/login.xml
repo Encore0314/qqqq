@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致 -->
+	<Handle UID="f100">
+        <Operation Sql="select pid from employee_info where (username=:id or userid=:id) " 
+        ExpectRows="&gt;0" ExpectFaultMsg="无此用户！">
+			<Field>id</Field>
+        </Operation>
+		<Operation Sql="select 1 from dual"></Operation>
+		<Operation Sql="select e.userid, e.username,f_getdeptbypid(e.pid) deptname, e.sex, e.dept,getporgnamebydept(e.dept) orgname, e.age, e.cardid, e.pid, e.email, e.telephone, e.phone, e.fax, e.passwords, e.resdate,'3' openid   from employee_info e  
+		 where (username=:id or userid=:id) and passwords=:passwords" ExpectRows="&gt;0" ExpectFaultMsg="密码错误！">
+			<Field>id</Field>
+			<Field Encrypt="true">passwords</Field>
+		</Operation>
+		
+		
+		
+		<Other>
+			<FaultMsg>密码错误！</FaultMsg>
+			<SuccessPage>
+				 <Url>/mainservlet?fid=login.xml@gotoindex</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+	<Handle UID="gotoindex" >
+		<!-- 主页消息提示操作 -->
+		<Operation Sql="select * from functionlist where funcid='200000'" >
+			<Field SValue="pid" >pid</Field>
+			<Field  >funcid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/index.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+<!-- 个人信息管理 -->
+	<Handle UID="f400">
+		<Operation Sql="select * from employee_info where id=:id">
+			<Field SValue="id">id</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/person.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+<!-- 验证用户 -->
+	<Handle UID="f200">
+        <Operation Sql="select pid from employee_info where (username=:id or userid=:id) " 
+        ExpectRows="&gt;0" ExpectFaultMsg="无此用户！">
+			<Field>id</Field>
+        </Operation>
+		<Operation Sql="select 1 from dual"></Operation>
+		<Operation Sql="select '3' openid, e.userid, e.username,f_getdeptbypid(e.pid) deptname,e.sex, e.dept,getporgnamebydept(e.dept) orgname, e.age, e.cardid, e.pid, e.email, e.telephone, e.phone, e.fax, e.passwords, e.resdate,(select suporgid from org where orgid=e.dept) belongunit,'3CRG24FDD' openid,'1' factoryid, '1' schoolid  from employee_info e  
+		 where (username=:id or userid=:id) and passwords=:passwords" ExpectRows="&gt;0" ExpectFaultMsg="密码错误！">
+			<Field>id</Field>
+			<Field Encrypt="true">passwords</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg>密码错误！</FaultMsg>
+			<SuccessPage>
+				 <Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="f201">
+        <Operation Sql="select 1 from dual">
+        </Operation>
+		<Operation Sql="select 1 from dual"></Operation>
+		<Operation Sql="SELECT openid, nickname, avatar, idno, cardfront, cardblack, agentflag, schoolid, phone
+	FROM ez_member		 where openid=:openid" >
+			<Field>openid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				 <Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<!-- 管理员修改密码-->
+<Handle UID="upadminpwd">
+	<Operation Sql="select 1 from dual">
+	</Operation>
+	<Other>
+		<FaultMsg>操作错误！</FaultMsg>
+		<SuccessPage>
+			<Url>/upadminpwd.jsp</Url>
+		</SuccessPage>
+		<FaultPage>
+			<Url>window.history.go(-1); </Url>
+		</FaultPage>
+	</Other>
+</Handle>	
+<Handle UID="upadminpwd1">
+	<Operation Sql="select userid, username, sex, dept, age, position, cardid, type,
+		 eid, email, telephone, phone, fax, passwords  from employee_info a 
+		 where pid=:id and passwords=:oldpwd" ExpectRows="&gt;0" ExpectFaultMsg="旧密码不正确！" >
+	       <Field SValue="pid">id</Field>
+	       <Field Encrypt="true">oldpwd</Field>
+	       
+    </Operation>
+      <Operation Sql="update employee_info e set e.passwords=:newpwd1 where e.pid=:id">
+      	<Field SValue="pid">id</Field>
+      	<Field Encrypt="true">newpwd1</Field>
+      </Operation>
+	<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				 <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+	</Other>
+</Handle>
+		<!--  -->
+	<Handle UID="gotomainperson">
+		<Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/main_person.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url>window.history.go(-1); </Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+		<!--  -->
+	<Handle UID="gotomainmsg">
+		<Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/main_msg.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url>window.history.go(-1); </Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<!-- 新增员工 -->
+	<Handle UID="gotoemployee">
+		<Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+		   <SuccessMsg>$</SuccessMsg>		
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/employeeadd.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url>window.history.go(-1); </Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="getMenus">
+		<Operation Sql="select b.funcname,b.load_page from emp_func a ,functionlist b where a.func_id=b.funcid and a.emp_id=:emp_id ">
+			<Field SValue="id">emp_id</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/menu.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="checkphone">
+		<Operation Sql="select * from agentusers where userid=:ename">
+			<Field>ename</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/qdata_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+ </Content>

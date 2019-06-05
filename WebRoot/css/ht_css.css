@@ -1,0 +1,483 @@
+@charset "utf-8";
+/* CSS Document */
+
+/***********************字体定义*********************************/
+
+.font_white {
+	font-size:14px;
+	color:#FFF;  
+}
+.font_white2 {
+	font-size:16px;
+	color:#FFF;  
+}
+.font_title{
+	font-size:14px; 
+	font-weight: bold;
+}
+.font_title2{
+	font-size:14px; 
+	font-weight: bold;
+}
+.font_blue{
+	color:#43B8EE;
+	
+	}
+.font_black{
+	font-size:14px;
+	}
+.font_gray {
+  font-size: 14px;
+  color: rgb( 180, 180, 180 );
+}
+
+.font_gray_02 {
+  font-size: 14px;
+  color:#b0b0b0;
+}
+
+.font_big{
+	font-size:32px;
+	color:rgb( 92, 92, 92 );
+	height:60px;
+	line-height:60px;
+	width:100%;
+	text-align: center;
+	background:url(../img/login_heng.png) 100% center;
+	}
+	
+.font_oran{
+	color:#f66d16;
+	}
+
+strong{
+	font-weight:bold;
+	}	
+/***********************end*********************************/
+.text_sl{
+	display:inline-block;
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
+}
+/***********************链接定义*********************************/
+
+a.link_st01{
+	display:inline;
+	}
+	
+a.link_st01:link{
+	color:#FFF;
+	
+	}
+a.link_st01:visited{
+	color:#333;
+	
+	}
+	
+a.link_st01:hover{
+	text-decoration:underline;
+	
+	}
+	
+a.link_blue{
+	font-size:14px;
+	color:#43B8EE;
+	cursor:pointer;
+	}	
+a.link_blue:link{
+	text-decoration:none;
+	}	
+a.link_blue:visited{
+	color:#333333;
+	text-decoration:none;
+	}	
+a.link_blue:hover{
+	color:#43B8EE;
+	text-decoration:underline;
+	}	
+	
+a.lin_cz{
+	text-decoration:none;
+	color:#369;
+	cursor:pointer;
+	}
+	
+a.lin_cz:link{
+	text-decoration:none;
+	color:#369;
+	}	
+	
+a.lin_cz:visited{
+	text-decoration:none;
+	color:#F0F;
+	}	
+
+a.lin_cz:hover{
+	text-decoration:underline;
+	color:#369;
+	}
+
+a.link_img{
+	display:inline;
+	}
+a.link_img:link{
+	text-decoration:none;
+	color:#43B8EE;
+	}
+a.link_img:visited{
+	color:#333;
+	text-decoration:none;
+	}
+
+a.link_img:hover{
+	text-decoration:underline;
+	color:#f05e01;
+	}
+
+a.link_return:link{
+	text-decoration:none;
+	color:#f76d15;
+	}
+a.link_return:visited{
+	text-decoration:none;
+	color:#000;
+	}
+a.link_return:hover{
+	text-decoration:underline;
+	color:#f76d15;
+	}
+a.tabtitle1, a.tabtitle{
+	display:block;
+	padding-bottom:2px;
+	padding-top:2px;
+	padding-left:16px;
+	padding-right:16px;
+	line-height:30px;
+	text-align:center;
+	height:30px;
+	}
+a.tabtitle1{
+	position: relative;
+	
+	float:left;
+	color:#f76d15;
+	background:#FFF;
+	border-top:2px solid #f76d15;
+	border-bottom:2px solid #FFF;
+	color:#f76d15;
+	}
+
+a.tabtitle{
+	float:left;
+	border-right:1px solid #eeeff0;
+	color:#787878;
+
+	}
+/*
+a.tabtitle:link{
+	background:#f76d15;
+	color:#787878;
+	border-bottom:1px solid #eff3f4;
+	}
+a.tabtitle:visited{
+	background:#eff3f4;
+	color:#f76d15;
+	border:none;
+	}
+a.tabtitle:hover{
+	background:#FFF;
+	color:#f76d15;
+	border-bottom:1px solid #FFF;
+	}
+*/
+input.add_img{
+		display:block;
+		width:115px; 
+		height:78px;
+		background:url(../img/add_btn.png) no-repeat center;
+		cursor:pointer;
+	}
+input.add_img:focus{
+		width:115px; 
+		height:78px;
+		background:url(../img/add_btn.png) no-repeat center;
+	}
+/*.add_img:link, .add_img:visited{
+	display:block;
+		width:115px; 
+		height:78px;
+		margin:15px 5px;
+		cursor:pointer;
+	background:url(../img/add_btn.png) no-repeat center; 
+	}
+.add_img:hover{
+	display:block;
+		width:115px; 
+		height:78px;
+		margin:15px 5px;
+		cursor:pointer;
+	background:url(../img/add_btn_hover.png) no-repeat center; 
+	}
+	
+.add_img:active{
+	background:url(../img/add_btn_hover.png) no-repeat center; 
+	}
+/***************按钮定义******************/
+a.white{
+	color:#FFFFFF;
+	cursor:pointer;
+	}
+a.white:link, a.white:visited{
+	color:#FFFFFF;
+	text-decoration:none;
+	}
+a.white:hover{
+		text-decoration:underline;
+	}
+a.b_gray{
+	padding-left:18px;
+	padding-right:18px;
+	padding-bottom:5px;
+	padding-top:5px;
+	border: 1px solid #CCC;
+	color:#FFF;
+	font-size:12px;
+	font-weight:600;
+	cursor:pointer;
+	}
+/*a.b_gray:active{
+	background:#757575;
+	}*/
+a.b_gray:link, .b_gray:visited{
+	background:#999;
+	}
+a.b_gray:over{
+	background:#757575;
+	}
+.button, button{
+	text-align:center;
+	padding-left:18px;
+	padding-right:18px;
+	padding-bottom:5px;
+	padding-top:5px;
+	border: 1px solid #f66001;
+	color:#FFF;
+	font-size:12px;
+	font-weight:600;
+	cursor:pointer;
+	background:#f76d15;
+	}
+a.button, a.button_2, a.button_3{
+	padding-left:18px;
+	padding-right:18px;
+	padding-bottom:5px;
+	padding-top:5px;
+	border: 1px solid #f66001;
+	font-size:12px;
+	font-weight:600;
+	cursor:pointer;
+	color:#FFF;
+	
+	}
+a.button:link, a.button:visited{
+
+	background:#f76d15;
+	}
+	
+a.button:hover{
+	background:#f05e01;
+	}
+	
+	
+a.button_2{
+	background:url(../img/jiahao.png) no-repeat left;
+	}
+
+a.button_2:link, a.button_2:visited{
+
+	background:#f76d15 url(../img/jiahao.png) no-repeat left;
+	}
+	
+a.button_2:hover{
+	background:#f05e01 url(../img/jiahao.png) no-repeat left;
+	}
+	
+a.button_3{
+	background:url(../img/daochu.png) no-repeat left;
+	}
+a.button_3:link, a.button_3:visited{
+
+	background:#f76d15 url(../img/daochu.png) no-repeat left;
+	}
+a.button_3:hover{
+	background:#f05e01 url(../img/daochu.png) no-repeat left;
+	}
+	
+.link_return{
+	color:#f76d15;
+	background:none;
+	border:none;
+	cursor:pointer;
+	}
+
+.butt_mar{
+	margin-left:10px;
+	}
+.xiala{
+	 background:url(img/xiala.png) right no-repeat;
+	}
+.select{
+	width:100%;
+	height:60px;
+	}
+/***************页数定义******************/
+.page_box{
+	width:80%;
+	margin:5px auto;
+	}
+	
+.page_table{
+	margin:0 auto;
+	}
+	
+.page_table td{
+	padding:10px;
+	margin:5px;
+	overflow: hidden;
+	min-width: 10px;
+	}
+	
+.td_page a{
+	display:block;
+	width:110%;
+	padding:5%;
+	height:110%;
+	text-align:center;
+	font-size:12px;
+	color:#333;
+	}
+
+.td_page a:link, .td_page a:visited{
+	text-decoration:underline;
+	color:#f76d15;
+	-webkit-border-radius: 2px;
+	}
+	
+.td_page a:hover{
+	text-decoration:none;
+	color:#FFF;
+	background:#f76d15;
+	-webkit-border-radius: 2px;
+	}
+/*****数据报表*****/	
+/*时间按钮定义*/
+a.date_btn{
+	margin:5px;
+	width:120px; 
+	height:32px; 
+	float:left;
+	text-align: center;
+	border:none;
+	font-weight:bold;
+	background: #42B8EE;
+	color: #FFF;
+	cursor:pointer;  
+	}
+/******************色块定义**********************/
+.orange{
+	width:100%;
+	height:2px;
+	background:#F66001;
+	}
+.bg_white{
+	width:100%;
+	height:auto;
+	background:#FFF;
+	}
+.bg_lv{
+	background:#EFF3F4;
+	
+	}
+.bg_gray{
+	background:#f3f3f3;
+	}
+.tixing{
+	z-index:100000;
+	display:block;
+	width:21px;
+	height:21px;
+	text-align:center;
+	line-height:21px;
+	margin-left:135px;
+	font-weight:bold;
+	
+	color:#f76d15;
+	font-size:12px;
+	/*
+	color:#FFF;
+	background:#f76d15;
+	background:url(../img/tixing.png) no-repeat right;*/
+
+	}
+/*色块*/
+.top_content{
+	display:block;
+	width:903px;
+	margin:10px auto; 
+	height:30px; 
+	color:#FFF;
+	line-height:30px;
+	background:#F76D15;"
+	}
+/*控件*/
+textarea{
+	color:#666;
+	width:96%;
+	height:50px;
+	max-width:98%;
+	overflow-y:scroll;
+	resize: none;
+	}
+select:focus, input:focus{
+	background:#FFFFFF;
+	outline:0;
+	}
+.button, button{
+	text-align:center;
+	padding-left:18px;
+	padding-right:18px;
+	padding-bottom:5px;
+	padding-top:5px;
+	border: 1px solid #f66001;
+	color:#FFF;
+	font-size:12px;
+	font-weight:600;
+	cursor:pointer;
+	background:#f76d15;
+	}
+input.button:focus{
+	border: 1px solid #f66001;
+	background:#f05e01;
+	}
+/*滚动条设置*/
+iframe{
+	scrollbar-arrow-color: #f4ae21; /*图6,三角箭头的颜色*/
+scrollbar-face-color: #333; /*图5,立体滚动条的颜色*/
+scrollbar-3dlight-color: #666; /*图1,立体滚动条亮边的颜
+
+色*/
+scrollbar-highlight-color: #666; /*图2,滚动条空白部分的
+
+颜色*/
+scrollbar-shadow-color: #999; /*图3,立体滚动条阴影的颜
+
+色*/
+scrollbar-darkshadow-color: #666; /*图4,立体滚动条强阴
+
+影的颜色*/
+scrollbar-track-color: #666; /*图7,立体滚动条背景颜色*/
+
+scrollbar-base-color:#f8f8f8; /*滚动条的基本颜色*/
+	
+	}

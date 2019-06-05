@@ -1,0 +1,100 @@
+.htm1{float:left;width: 768px;margin: 1px auto;border: #ddd solid 6px;text-align: center;}
+.htm1 .checkout-button{margin:10px auto;}
+.htm1 .loding{float: left; width:500px;height:548px;overflow:auto;}
+.htm1 select{color: #666;font:400 16px/16px "宋体";}
+/***座位表样式+开始***/
+div.seatCharts-cell {color: #182C4E;height: 25px;width: 25px;line-height: 25px;margin: 3px; 
+	font-size: 13px;}
+div.seatCharts-seat {color: #fff;cursor: pointer;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius: 5px;}
+div.seatCharts-row {height: 35px;}
+div.seatCharts-seat.available {background-color:#FFB973;}
+/*div.seatCharts-seat.focused {color:#76B474;border: none;}*/
+div.seatCharts-seat.selected {background-color:#67AF22;}
+div.seatCharts-seat.deleted {background-color:#FF4D4D;}
+div.seatCharts-seat.unavailable {background-color: #999999;cursor: not-allowed;}
+div.seatCharts-container {border-right: 1px solid #adadad;min-width: 200px;max-width:auto;padding: 5px;float: left;}
+div.seatCharts-legend {text-align: center}
+.seatCharts-legendItem{float:left; width:90px;}
+.checkout-button {display: block;width:80px; height:24px; line-height:20px;margin: 10px;border:1px solid #999;font-size: 14px; cursor:pointer}
+.booking-details {float: left;position: relative;width:200px;height: 450px;margin: 10px 5px 0 0;font-size: 16px;}
+.booking-details p{line-height:26px; font-size:16px; color:#999;}
+span.seatCharts-legendDescription {margin-left: 5px;line-height: 30px;}
+#selected-seats {padding-left: 55px;max-height: 150px;overflow-y: auto;width: 200px;}
+#selected-seats li{float:left; width:72px; height:26px; line-height:26px; border:1px solid #d3d3d3; background:#f7f7f7; margin:6px; font-size:14px; font-weight:bold; text-align:center}
+
+
+.sminput_focus{
+		
+		width: 16px;
+		height: 16px;
+		text-align: center;
+		padding-left: 4px;
+		background:none;
+		border: 0px;
+	}
+	
+	.hidden{
+		display: none;
+	}
+	
+	.legend-box{
+		height: 28px;
+	    line-height: 28px;
+	    padding: 7px 0;
+	}
+	
+	.btn-seat{
+		display: inline-block;
+	    width: 80px;
+	    height: 28px;
+	    line-height: 28px;
+	    text-align: center;
+	    color: #ffffff;
+	    margin-right: 10px;
+	    vertical-align: top;
+	    border-radius: 4px;
+	    -webkit-border-radius: 4px;
+	    -moz-border-radius: 4px;
+	}
+	
+	
+	.stage_div{
+		
+		background-color: #EEEEEE;
+		text-align: center;
+		height: 30px;
+		line-height: 30px;
+		font-size: 16px;
+		
+	}
+	
+
+	.cell_title_all{
+		color: #182C4E;
+	    height: 25px;
+	    width: 30px;
+	    line-height: 25px;
+	    margin: 3px;
+	    float: left;
+	    text-align: center;
+	    outline: none;
+	    font-size: 13px;
+	    padding: 0;
+    	border: 0;
+	}
+	
+	
+	.cell_select_all{
+		background-color: #FFB973;
+		color: #fff;
+    	cursor: pointer;
+    	border-radius: 5px;
+    	height: 25px;
+	    width: 25px;
+	    line-height: 25px;
+	    margin: 3px;
+	    float: left;
+	    text-align: center;
+	    outline: none;
+	    font-size: 11px;
+	}

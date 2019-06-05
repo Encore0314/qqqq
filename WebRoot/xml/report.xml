@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+	
+	<!-- 项目进度报表-->
+	<Handle UID="rep1">
+		<Operation Sql="call p_report1(:year);">
+			<Field>year</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 项目总体完成情况 -->
+	<Handle UID="rep2">
+		<Operation Sql="select (select count(1) as val from tb_project where getprojress(id)='前期工作') as c1
+		,(select count(1) as val from tb_project where getprojress(id)='整治中') as c2
+		,(select count(1) as val from tb_project where getprojress(id)='完成') as c3;">
+		
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 区镇/办事处完成率top3 -->
+	<Handle UID="rep3">
+		<Operation Sql="select a.orgid,(select orgname from org where orgid=a.orgid) orgname,ifnull(b.cou,0)/a.cou as orderval from
+							(
+							select count(1) cou,orgid from tb_project group by orgid
+							) a
+							left join 
+							(
+							select count(1) cou,orgid from tb_project where getprojress(id)='完成' group by orgid
+							) b
+							on a.orgid=b.orgid
+						order by orderval desc
+						limit 3;">
+		
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 按类别完成情况 -->
+	<Handle UID="rep4">
+		<Operation Sql="select code_name
+					,Max(case pstatus when '前期工作' then val else 0 end ) c1
+					,Max(case pstatus when '整治中' then val else 0 end ) c2
+					,Max(case pstatus when '完成' then val else 0 end ) c3
+					from (
+					    select nclassify,code_name,pstatus,count(1) val
+					    from (
+					    select n.nclassify,c.code_name,getprojress(p.id) pstatus from tb_project p 
+					    inner join tb_norm n on p.nid=n.id
+					    inner join tb_codeinfo c on c.code_id=n.nclassify
+					    ) a
+					    group by nclassify,pstatus,code_name    
+					) b GROUP by code_name
+					;">
+		
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 首页数字 -->
+	<Handle UID="glbmnum">
+		<Operation Sql="select 
+							(SELECT count(1) FROM tb_project where pstatus=1 and f_getproject_outstatus(id)=1) num1,
+							(select count(1) from tb_project) num2,
+							(select count(1) from ( 
+								SELECT * from tb_property_task_value WHERE UNIX_TIMESTAMP(date(time)) &lt; UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE))
+								AND status=0
+							  GROUP BY aorgid
+							) a) num3,
+							(select count(1) from ( 
+								SELECT * from tb_proj_progress WHERE UNIX_TIMESTAMP(date(time)) &lt; UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE))
+								AND status=0
+								GROUP BY pid
+							) a) num4
+						from dual
+					;">
+		
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<!-- 首页数字 -->
+	<Handle UID="qtbmnum">
+		<Operation Sql="select 
+							(SELECT count(1) FROM tb_project where pstatus=1 and f_getproject_outstatus(id)=1 and assessunit=:user_orgid ) num1,
+							(select count(1) from tb_project where assessunit=:user_orgid) num2,
+							(select count(1) from ( 
+								SELECT * from tb_property_task_value WHERE UNIX_TIMESTAMP(date(time)) &lt; UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE))
+								AND status=0 and aorgid=:user_orgid 
+							  GROUP BY normid
+							) a) num3,
+							(select count(1) from ( 
+								SELECT * from tb_proj_progress prog WHERE UNIX_TIMESTAMP(date(time)) &lt; UNIX_TIMESTAMP(CAST(SYSDATE()AS DATE))
+								AND status=0
+								AND (select assessunit from tb_project where id=prog.pid)=:user_orgid
+								GROUP BY pid
+							) a) num4
+						from dual
+					;">
+			<Field SValue="dept">user_orgid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 办事处首页，绩效考核小图数据 -->
+	<Handle UID="bscsmall">
+		<Operation Sql="select code_id,code_name,sum(score_avg) score from
+						(
+						SELECT 
+								(SELECT code_name FROM tb_codeinfo where code_id=norm.nclassify) code_name,
+								(SELECT code_id FROM tb_codeinfo where code_id=norm.nclassify) code_id,
+								ROUND(avg(IFNULL(score,0)),2)  score_avg
+						from tb_property_task_value tv
+								INNER JOIN tb_norm norm on tv.normid=norm.id
+						WHERE (SELECT sup_code_id FROM tb_codeinfo where code_id=norm.nclassify)=:supcode
+						and tv.time like format_like(:month)
+						and tv.borgid=:user_orgid
+						GROUP BY normid
+						) a
+						GROUP BY a.code_id;">
+			<Field SValue="dept">user_orgid</Field>
+			<Field>month</Field>
+			<Field>supcode</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<!-- 办事处首页，绩效考核大图数据 -->
+	<Handle UID="bscbig">
+		<Operation Sql="select 
+								(select code_name from tb_codeinfo where code_id=a.sup_code_id) code_name,
+								a.sup_code_id code_id,
+								sum(a.score_avg) score,
+								sum(a.nvalue) maxscore from
+						(
+						SELECT 
+								code1.code_id,
+								code1.sup_code_id,
+								ROUND(avg(IFNULL(score,0)),2)  score_avg,
+								norm.nvalue
+						from tb_property_task_value tv
+								INNER JOIN tb_norm norm on tv.normid=norm.id
+								INNER JOIN tb_codeinfo code1 on code1.code_id=norm.nclassify
+						WHERE 
+								(
+									code1.sup_code_id='0102' or
+									code1.sup_code_id='0103' or
+									code1.sup_code_id='0104' or
+									code1.sup_code_id='0105'
+								)
+						and tv.time like format_like(:month)
+						and tv.borgid=:user_orgid
+						GROUP BY normid
+						) a
+						GROUP BY a.sup_code_id;">
+			<Field SValue="dept">user_orgid</Field>
+			<Field>month</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 年度绩效汇总表接口-->
+	<Handle UID="rep10">
+		<Operation Sql="select orgname,nclassify,c1,c2,cast(sum(score) as decimal(10,2)) score
+from (
+select bo.orgname
+,n.nclassify,(select code_name from tb_codeinfo where code_id=n.nclassify) c2
+,(select code_name from tb_codeinfo where code_id=(select sup_code_id from tb_codeinfo where code_id=n.nclassify)) c1
+,t.normid,avg(t.score) score
+from tb_property_task_value t
+inner join org bo on t.borgid=bo.orgid
+inner join tb_norm n on t.normid=n.id
+ WHERE year(t.time)=:year and t.status=1  
+group by bo.orgname,n.nclassify,t.normid
+
+) t1
+group by orgname,nclassify
+order by orgname,nclassify;">
+			<Field>year</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 加扣分项汇总表接口-->
+	<Handle UID="rep11">
+		<Operation Sql="select aorgname,borgname,cast(sum(score) as decimal(10,2)) score,GROUP_CONCAT(nname order by nname)nname
+from (
+select ao.orgname aorgname,bo.orgname borgname
+,t.normid,sum(t.score)*case n.ntype when 2 then -1 else 1 end score
+,n.nname
+from tb_property_task_value t
+inner join org ao on t.aorgid=ao.orgid
+inner join org bo on t.borgid=bo.orgid
+inner join tb_norm n on t.normid=n.id
+ WHERE year(t.time)=:year and t.status=1 
+and n.nclassify in (select code_id from tb_codeinfo where sup_code_id='0107')
+group by ao.orgname,bo.orgname,n.nclassify,t.normid
+) t1
+group by aorgname,borgname;">
+			<Field>year</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+	
+ </Content>

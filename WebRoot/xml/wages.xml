@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+
+	<Handle UID="selectproject">
+		<Operation Sql="
+			select *,f_getcodenamebyid(codeflag) codeflagname  from tb_project where :codeflag and :query order by codeflag,ordernumber limit :start,:limit
+		">
+			<Field QueryValue="codeflag = :codeflag" >codeflag</Field>
+			<Field QueryValue="codename like format_like(:query)" >query</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+		
+		<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	  from tb_project where :codeflag and :query 
+	  	) t
+">
+				
+			<Field QueryValue="codeflag = :codeflag" >codeflag</Field>
+			<Field QueryValue="codename like format_like(:query)" >query</Field>
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<Handle UID="getprojectbyid">
+		<Operation Sql="
+			select *,f_getcodenamebyid(codeflag) codeflagname  from tb_project where id=:id 
+		">
+			<Field >id</Field>
+		</Operation>
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+	<Handle UID="addproject">
+		<Operation Sql="
+			insert into tb_project 
+			(
+				codename,
+				codevalue,
+				codetype,
+				codeflag,
+				ordernumber,
+				codetime
+			) values
+			(
+				:codename,
+				:codevalue,
+				:codetype,
+				:codeflag,
+				:ordernumber,
+				now()
+			)
+		">
+			<Field>codename</Field>
+			<Field>codevalue</Field>
+			<Field>codetype</Field>
+			<Field>codeflag</Field>
+			<Field>ordernumber</Field>
+		</Operation>
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<Handle UID="updateproject">
+		<Operation Sql="
+			update tb_project set
+				codename=:codename,
+				codevalue=:codevalue,
+				codetype=:codetype,
+				codeflag=:codeflag,
+				ordernumber=:ordernumber
+			where id=:id
+		">
+			<Field>id</Field>
+			<Field>codename</Field>
+			<Field>codevalue</Field>
+			<Field>codetype</Field>
+			<Field>codeflag</Field>
+			<Field>ordernumber</Field>
+		</Operation>
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<Handle UID="deleteproject">
+		<Operation Sql="
+			delete from tb_project where id=:id
+		">
+			<Field>id</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 工资查询（带权限） -->
+	<Handle UID="selectwages">
+		<Operation Sql="
+			call f_wageslist(:wcodeflag,:wdate,:wstatus,:worgname,:uname,:pid);
+		">
+			<Field>wcodeflag</Field>
+			<Field>wdate</Field>
+			<Field>wstatus</Field>
+			<Field>worgname</Field>
+			<Field>uname</Field>
+			<Field SValue="pid" >pid</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 工资查询（无权限） -->
+	<Handle UID="selectwageswithoutroles">
+		<Operation Sql="
+			call f_wageslist(:wcodeflag,:wdate,:wstatus,:worgname,:uname,'all');
+		">
+			<Field>wcodeflag</Field>
+			<Field>wdate</Field>
+			<Field>wstatus</Field>
+			<Field>worgname</Field>
+			<Field>uname</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取工资查询可选择的日期（有权限） -->
+	<Handle UID="getwagesdate">
+		<Operation Sql="
+			select DISTINCT wdate from tb_wages w1 where w1.wcodeflag = :wcodeflag and :wstatus and
+			(w1.uid = (select userid from employee_info where pid=:pid) or
+				w1.worgid in (select DISTINCT orgid from tb_roleorgs where rid in (
+				select rid from tb_emprole where pid=:pid
+				))) order by wdate desc
+		">
+			<Field>wcodeflag</Field>
+			<Field QueryValue="wstatus = :wstatus" >wstatus</Field>
+			<Field SValue="pid" >pid</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 获取工资查询可选择的日期（无权限） -->
+	<Handle UID="getwagesdatewithoutroles">
+		<Operation Sql="
+			select DISTINCT wdate from tb_wages w1 where w1.wcodeflag = :wcodeflag and :wstatus 
+			 order by wdate desc
+		">
+			<Field>wcodeflag</Field>
+			<Field QueryValue="wstatus = :wstatus" >wstatus</Field>
+			<Field SValue="pid" >pid</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 生成工资 -->
+	<Handle UID="generatewages">
+		<Operation Sql="
+			call p_docreate(:olddate, :newdate, :codeflag);
+		">
+			<Field>olddate</Field>
+			<Field>newdate</Field>
+			<Field>codeflag</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 根据条件发布工资 -->
+	<Handle UID="changewagesstatus">
+		<Operation Sql="
+			update tb_wages set wstatus='1' where wcodeflag = :wcodeflag and wdate=:wdate
+		">
+			<Field>wcodeflag</Field>
+			<Field>wdate</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<!-- 工资导入excel -->
+	<Handle UID="uploadwages">
+		<Operation Sql="
+			select :wcodeflag wcodeflag, :wdate wdate, :inputfile inputfile from dual;
+		">
+			<Field>inputfile</Field>
+			<Field>wcodeflag</Field>
+			<Field>wdate</Field>
+		</Operation>
+		
+		<Operation Sql="
+			delete from tb_wages where wcodeflag=:wcodeflag and wdate=:wdate
+		">
+			<Field>wcodeflag</Field>
+			<Field>wdate</Field>
+		</Operation>
+		
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/uploadexcelback.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+
+ </Content>

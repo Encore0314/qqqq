@@ -1,0 +1,119 @@
+*{margin:0;padding:0;}
+.fa {
+	width: 1020px;
+	height:auto;
+	padding: 5px;
+	overflow:hidden;
+	margin:10px auto;
+}
+.showimg2 {
+	width: 940px;
+	height:auto;
+	overflow:hidden;
+	padding-bottom:15px;
+	padding-left:8px;
+	padding-right:8px;
+	padding-top:15px;
+	margin:0 auto;
+	border: 1px solid #DFDFDF;
+	box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+.showimg_left {
+	margin-left: 30px;
+	float: left;
+	width: 150px;
+	height: 550px;
+	overflow-x: hidden;
+	background:#f9f9f9;
+	overflow-y:auto;
+	  scrollbar-face-color: #E100E1;
+	  scrollbar-shadow-color: maroon;
+	  scrollbar-highlight-color: white;
+	  scrollbar-3dlight-color: #E100E1;
+	  scrollbar-darkshadow-color:#E100E1;
+	  scrollbar-arrow-color:#E100E1;
+	  scrollbar-base-color: #E100E1;
+	  scrollbar-track-color: #E100E1;
+	  filter: chroma(color=#E100E1);
+
+}
+.showimg_left ul li {
+	display: block;
+	width: 150px;
+	margin:8px auto;
+	height: 500px;
+	overflow-y: scroll;
+}
+.simg{
+	width:110px;
+	margin-left: 10px;
+	}
+.simg img {
+	width:110px;
+	height:85px;
+	overflow:hidden;
+	max-height:100px;
+}
+
+.showimg_right {
+	width: 750px;
+	float: left;
+	}
+.top {
+		padding:5px;
+		margin: 20px 0;
+}
+.top .i1 {
+background:#CCC;
+}
+.top input {
+width: 25px;
+height: 25px;
+border: 1px solid #fff;
+border-radius: 4px;
+background: #ddd;
+}
+.top .i2 {
+background: #FF0000;
+}
+.top .i3 {
+background: #80FF00;
+}
+.can_hb{ 
+display:block;
+margin-right:10px;
+float:left;}
+.font input {
+font-size: 14px;
+}
+.top .grea {
+background: #aaa;
+}
+
+.top{margin:20px 0;}
+.top input{
+	width:25px;
+	height:25px;
+	border:1px solid #fff;
+	border-radius:1px;
+	background:#ddd;
+	}
+.top .i1{background:#000000;}
+.top .i2{background:#FF0000;}
+.top .i3{background:#80FF00;}
+.top .i4{background:#00FFFF;}
+.top .i5{background:#808080;}
+.top .i6{background:#FF8000;}
+.top .i7{background:#408080;}
+.top .i8{background:#8000FF;}
+.top .i9{background:#CCCC00;}
+#canvas{
+	background:#eee;
+	cursor:default;
+	border:2px solid #DDD
+	margin:2px auto;}
+#canvas img{
+	width:700px;
+	}
+.font input{font-size:14px;}
+.top .grea{background:#aaa;}

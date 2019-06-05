@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致 -->
+
+
+<!-- 系统日志 -->
+<Handle UID="sysloglist">
+		<Operation
+Sql="select 1 from dual;">
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/sysloglist.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="sysloglist2">
+ 
+			<Operation
+			Sql="select * from ( 
+select  log_id, log_user_id, log_nick_name, log_ip, log_module_name, log_remark,date_to_char(log_oper_time,6) log_oper_time, log_type from sys_log where log_type='0' and :starttime and :endtime )  a order by  log_oper_time desc limit :start,:limit">
+      <Field QueryValue="log_oper_time&gt;=char_to_date(:starttime,3)">starttime</Field>	
+      <Field QueryValue="log_oper_time&lt;=char_to_date(:endtime,3)">endtime</Field>	
+         
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="select  allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1 from sys_log where log_type='0' and :starttime and :endtime ) t
+				 ">
+      <Field QueryValue="log_oper_time&gt;=char_to_date(:starttime,3)">starttime</Field>	
+      <Field QueryValue="log_oper_time&lt;=char_to_date(:endtime,3)">endtime</Field>		
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+
+		</Operation>
+	
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/sysloglist2.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 会员日志 -->
+<Handle UID="userloglist">
+		<Operation
+			Sql="select 1 from dual;">
+
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/userloglist.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="userloglist2">
+ 
+		<Operation
+			Sql="select * from ( 
+select  log_id, log_user_id, log_nick_name, log_ip, log_module_name, log_remark,date_to_char(log_oper_time,6) log_oper_time, log_type from sys_log where log_type='1' and :starttime and :endtime )  a order by  log_oper_time desc limit :start,:limit">
+      <Field QueryValue="log_oper_time&gt;=char_to_date(:starttime,3)">starttime</Field>	
+      <Field QueryValue="log_oper_time&lt;=char_to_date(:endtime,3)">endtime</Field>	
+         
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="select  allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1 from sys_log where log_type='1' and :starttime and :endtime ) t
+				 ">
+      <Field QueryValue="log_oper_time&gt;=char_to_date(:starttime,3)">starttime</Field>	
+      <Field QueryValue="log_oper_time&lt;=char_to_date(:endtime,3)">endtime</Field>		
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+
+		</Operation>
+	
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/userloglist2.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+			
+ </Content>

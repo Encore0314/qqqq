@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun (Tianjin.Xuntong.LTD) -->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<!-- 这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致 -->
+
+
+<!-- 企业申请列表 -->
+	<Handle UID="qysqlist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qysqlist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 企业待报送列表 -->
+	<Handle UID="dhzqd">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/dhzqd.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 企业申请已报送审核 -->
+	<Handle UID="qybsshlist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qybsshlist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 个人申请列表 -->
+	<Handle UID="grsqlist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grsqlist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 个人待报送列表 -->
+	<Handle UID="grsqhzlist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grsqhzlist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 个人已报送列表 -->
+	<Handle UID="grbsshlist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grbsshlist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 企业申请已报送 -->
+	<Handle UID="qyyhzqd">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qyyhzqd.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!--  -->
+	<Handle UID="grsqyhz">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grsqyhz.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<!-- 企业发放列表 -->
+	<Handle UID="qyfflist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qyfflist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 企业申请已报送 -->
+	<Handle UID="qytk">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/qytk.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="grtk">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/grtk.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 个人发放列表 -->
+	<Handle UID="grfflist">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grfflist.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+<Handle UID="buyermanage">
+<Operation Sql="select * from (
+select row_number() over(order by a.resdate desc) rs,userid,username,id,phone,date_to_char(resdate,3) intime,status,decode(status,'0','申请','1','已审核') statusname,a.usernum,
+  (select leftmoney from wallet where active='1' and userid=a.id) guarantee
+  from agentusers a where utype='2' and :status
+ )
+						        where  rs&gt;(to_number(:start)-1)*to_number(:limit)
+        and rs&lt;=to_number(:start)*to_number(:limit)">
+      <Field QueryValue="status=:status">status</Field>
+         		<Field DefaultValue="1">start</Field>
+        		<Field DefaultValue="10">limit</Field>
+        		</Operation>
+ 		<Operation Sql="select count(1) allrs,ceil(count(1)/to_number(:limit)) ys,:start beg,:limit limit from 
+						  ( 
+				select * from agentusers where utype='2' and :status) 
+				 ">
+      <Field QueryValue="status=:status">status</Field>
+         		<Field DefaultValue="1">start</Field>
+        		<Field DefaultValue="100">limit</Field>
+
+ </Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/list_agent.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>		
+<Handle UID="businessmanage">
+   <Operation Sql="select a.carnumber,getcodenamebyid(a.maker) maker,getcodenamebyid(a.model) model,getcodenamebyid(a.brand) brand,a.firstdate,a.image1,getcargrade(a.carid) grade,
+			getcarstatus(a.carid,'') status,getcarstatus(a.carid,'n') statusname,a.carid,(select max(price) from bidinfo where carid=a.carid) price,
+      date_to_char((select max(intime) from bidinfo where carid=a.carid),6) intime,
+      (select count(1) from bidinfo where carid=a.carid) pricecount,      case when a.bidstarttime+1/24-sysdate>0 then
+       trunc((a.bidstarttime+1/24-sysdate)*24*60)||chr(58)||round(((a.bidstarttime+1/24-sysdate)*24*60-trunc((a.bidstarttime+1/24-sysdate)*24*60))*60)
+      else 
+       '0'||chr(58)||'0'
+       end lefttime,decode(trim(a.ischecked),'1','验车通过','2','验车未通过','未验车') ischecked
+       from carinfo a 
+			where :status  and trim(nvl(ischecked,'0'))=:ischecked and :start and :end and getcarstatus(a.carid,'') is not null order by a.bidstarttime">
+			<Field QueryValue="instr(:status,getcarstatus(a.carid,''))>0" DefaultValue="11$41$20$50$60">status</Field>
+			<Field DefaultValue="0">ischecked</Field>
+			<Field QueryValue="a.bidstarttime&gt;char_to_date(:start,2)">start</Field>
+			<Field QueryValue="a.bidstarttime&lt;add_months(char_to_date(:end,2),1)">end</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/list_car.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<Handle UID="agentmanage">
+<Operation Sql="select * from (
+select row_number() over(order by a.resdate desc) rs,userid,username,id,phone,status,decode(status,'0','申请','1','已审核') statusname,a.usernum,
+  guarantee,getguaranteeleft(userid) guaranteeleft,(select count(1) from porder where buyer=a.userid and status='1') allsale,months_between(trunc(sysdate,'mm'),trunc(a.resdate,'mm')) hzys
+  from agentusers a where utype='2' and :status
+ )
+						        where  rs&gt;(to_number(:start)-1)*to_number(:limit)
+        and rs&lt;=to_number(:start)*to_number(:limit)">
+      <Field QueryValue="status=:status">status</Field>
+         		<Field DefaultValue="1">start</Field>
+        		<Field DefaultValue="10">limit</Field>
+        		</Operation>
+ 		<Operation Sql="select count(1) allrs,ceil(count(1)/to_number(:limit)) ys,:start beg,:limit limit from 
+						  ( 
+				select * from agentusers where utype='2' and :status) 
+				 ">
+      <Field QueryValue="status=:status">status</Field>
+         		<Field DefaultValue="1">start</Field>
+        		<Field DefaultValue="10">limit</Field>
+
+ </Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/list_agent.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>		
+	
+	<!-- 就业补贴统计 -->
+	<Handle UID="grtongji">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grtongji.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 就业补贴统计_街镇 -->
+	<Handle UID="grtongji_szjd">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/grtongji_szjd.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<!-- 岗位补贴统计 -->
+	<Handle UID="qytongji">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qytongji.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 岗位补贴统计_街镇 -->
+	<Handle UID="qytongji_szjd">
+   <Operation Sql="select 1 from dual">
+		
+		</Operation>
+ 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/qytongji_szjd.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 企业明细查询 -->
+		<Handle UID="qymxquery">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/qymx.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 个人明细查询 -->
+		<Handle UID="grmxquery">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/grmx.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<!-- 个人明细查询 -->
+		<Handle UID="grmxprint">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/grsqmxprint.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>		
+		<Handle UID="grhzprint">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/grsqhzprint.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<Handle UID="qymxprint">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/qysqmxprint.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>		
+		<Handle UID="qyhzprint">
+   <Operation Sql="select 1 from dual">
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/gwbt/qysqhzprint.html</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>			
+ </Content>

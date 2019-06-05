@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun
+		(Tianjin.Xuntong.LTD)
+	-->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+	<!--
+		这个文件是用来处理用户登录的，这里的uid设置要和com.arch.util.sysconst.java文件里的LOGIN_FID的uid编号一致
+	-->
+	<!--角色管理 -->
+<Handle UID="gotolist">
+		<Operation
+			Sql="
+			 select * from (select 
+rid, rname, intime, pid, (select count(funcid) from tb_rolefuns where rid=a.rid ) countf,(select count(pid) from tb_emprole where rid=a.rid ) countp 
+from tb_rolelist a order by a.intime) t limit :start,:limit 
+">
+   
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+			
+		</Operation>
+
+		<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	  from  tb_rolelist ) t
+">
+				
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/list_role.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!--角色删除 -->
+		<Handle UID="dodelete">
+
+		<Operation Sql="call sp_deleterole(:rid,'all')">
+
+			<Field>rid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=role.xml@gotolist</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+		<!-- 权限管理 -->
+	<Handle UID="privmanage">
+		<!-- 角色所有权限 -->
+
+
+
+		<!-- 查看角色姓名 -->
+		<Operation
+			Sql="select rid,rname from tb_rolelist where rid =:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/role_func.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<!-- 权限添加 -->
+	<Handle UID="savepriv">
+		<Operation Sql="insert into tb_rolelist(rid,rname,intime,pid) values(:rid,:rname,now(),:pid)">
+			<Field Sequences="rid">rid</Field>
+			<Field SValue="pid">pid</Field>
+			<Field>rname</Field>
+		</Operation>
+
+		<Operation Sql="delete from tb_rolefuns where rid=:rid">
+			<Field OtherOperation="operation1">rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_rolefuns(rid, funcid) values(:rid,:funcsubid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">funcsubid</Field>
+		</Operation>
+		<Other>
+			<SuccessMsg>设置权限成功</SuccessMsg>
+			<SuccessPage>
+				<!-- <Url>/list_user.jsp</Url> -->
+				<Url>/mainservlet?fid=role.xml@gotolist</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+		<!-- 权限修改 -->
+	<Handle UID="updatepriv">
+		<Operation Sql="update tb_rolelist set rname=:rname,intime=now(),pid=:pid where rid=:rid">
+			<Field>rid</Field>
+			<Field SValue="pid">pid</Field>
+			<Field>rname</Field>
+		</Operation>
+
+		<Operation Sql="delete from tb_rolefuns where rid=:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_rolefuns(rid, funcid) values(:rid,:funcsubid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">funcsubid</Field>
+		</Operation>
+
+		<Other>
+			<SuccessMsg>设置权限成功</SuccessMsg>
+			<SuccessPage>
+				<!-- <Url>/list_user.jsp</Url> -->
+				<Url>/mainservlet?fid=role.xml@gotolist</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+			<!-- 权限管理 -->
+	<Handle UID="emprole">
+		<!-- 员工所有权限 -->
+		<Operation
+			Sql="select distinct pid from tb_emprole where rid =:rid order by pid">
+			<Field>rid</Field>
+		</Operation>
+		<!-- 总权限列表 -->
+		<Operation
+			Sql="select distinct orgid,orgname from org order by orgid ">
+		</Operation>
+		<!-- 所有子权限 -->
+		<Operation
+			Sql="select pid,username,dept from employee_info where dept in(select orgid from org) order by dept">
+		</Operation>
+		<!-- 查看员工姓名 -->
+		<Operation
+			Sql="select rid,rname from tb_rolelist where rid =:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/emp_func.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+			<!-- 权限修改 -->
+	<Handle UID="updateemprole">
+		<Operation Sql="delete from tb_emprole where rid=:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_emprole(rid, pid) values(:rid,:funcsubid);">
+			<Field>rid</Field>
+			<Field>funcsubid</Field>
+		</Operation>
+
+		<Other>
+			<SuccessMsg>设置权限成功</SuccessMsg>
+			<SuccessPage>
+				<!-- <Url>/list_user.jsp</Url> -->
+				<Url>/mainservlet?fid=role.xml@gotolist</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 增加新的员工 -->
+	<Handle UID="gotoinsuser">
+		<Operation Sql="select 1 from dual ">
+
+
+		</Operation>
+		<Operation Sql="select orgid ,getorgprefix(orgid)||orgname  orgname from org order by orgid">
+
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/useradd.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="insuser">
+		<Operation
+			Sql="insert into employee_info
+  (userid,username,sex,age,dept,type,email,telephone,fax,resdate,cardid  ,pid   ,passwords,position                         
+)
+values
+  (:userid, :username, :sex, :age,:orgid, '', :email,:telephone,:fax,sysdate,:cardid,:pid,:passwords,:position)">
+			<Field>userid</Field>
+			<Field>cardid</Field>
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field>age</Field>
+			<Field>orgid</Field>
+			<Field>email</Field>
+			<Field>telephone</Field>
+			<Field Encrypt="true">passwords</Field>
+			<Field>fax</Field>
+			<Field Sequences="pid">pid</Field>
+			<Field>position</Field>
+		</Operation>
+		<Other>
+			<SuccessMsg>操作成功！</SuccessMsg>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/mainservlet?fid=user.xml@userlist</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 修改客户信息 -->
+	<Handle UID="gotomoduser">
+		<Operation Sql="select * from employee_info where pid=:pid">
+			<Field SValue="pid">pid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/usermod.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="gotoupuser">
+		<Operation Sql="select userid, username, sex, dept, age, position, cardid,  (select orgname from org where orgid=dept) orgname,
+        type, eid, pid, email, telephone, phone, fax,case position when '1' then '部门负责' else '普通员工' end as positionname from employee_info where pid=:pid">
+			<Field >pid</Field>
+		</Operation>
+		<Operation
+			Sql="select orgid ,getorgprefix(orgid)||orgname  orgname from org order by orgid;">
+
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/usermod2.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="doupuser">
+	<Operation Sql="call sp_insmodlog(:mpid,:pid)">
+		<Field SValue="pid">mpid</Field>
+		<Field>pid</Field>
+		</Operation>
+		<Operation
+			Sql="update employee_info set username=:username,sex=:sex,age=:age,dept=:dept,
+			email=:email,telephone=:telephone,position=:position  where pid=:pid">
+			<Field>userid</Field>
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field>dept</Field>
+			<Field>age</Field>
+			<Field>pid</Field>
+			<Field>email</Field>
+			<Field>telephone</Field>
+			<Field>fax</Field>
+			<Field>position</Field>
+			
+		</Operation>
+		
+			
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/</Url>
+                  
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	
+	<Handle UID="domoduser">
+		<Operation
+			Sql="update employee_info set username=:username,sex=:sex,age=:age,
+			email=:email,telephone=:telephone  where userid=:userid">
+			<Field>userid</Field>
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field>age</Field>
+			<Field>email</Field>
+			<Field>telephone</Field>
+			<Field>fax</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/</Url>
+                  
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="domoduser2">
+		<Operation
+			Sql="update employee_info set username=:username,sex=:sex,age=:age,
+			email=:email,telephone=:telephone ,passwords=:passwords where userid=:userid">
+			<Field>userid</Field>
+
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field>age</Field>
+
+			<Field>email</Field>
+			<Field>telephone</Field>
+
+			<Field>fax</Field>
+			<Field Encrypt="true">passwords</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/</Url>
+			
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+	<!-- 删除客户信息 -->
+	<Handle UID="deluser">
+
+		<Operation Sql="delete from employee_info where userid=:userid">
+
+			<Field>userid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=user.xml@userlist</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<!-- 查看员工信息 -->
+	<Handle UID="getuserarr">
+		<Operation
+			Sql="select userid, username, sex ,dept ,age , email , telephone,passwords,case position when '1' then '部门负责' else '普通员工' end as positionname,position
+  from employee_info 
+ where userid=:userid">
+			<Field>userid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/userlook.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+
+	
+	<!-- 导出员工列表 -->
+	<Handle UID="exportuser">
+		<Operation Sql="select userid as 用户ID,username as 用户姓名,sex as 性别,age as 年龄,email as 邮箱,telephone as 电话, dept as 职位  from employee_info">
+			
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>
+					/exportuser.jsp
+				</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+<Handle UID="gotolistnews">
+		<Operation
+			Sql="select * from (select row_number() over(order by a.intime desc) rs,
+ title, content, date_to_char(intime,5) intime, (select username from employee_info where pid=a.pid) pid , nid  from tb_news a order by a.intime)  where 
+rs&gt;(to_number(:start)-1)*to_number(:limit)
+        and rs&lt;=to_number(:start)*to_number(:limit)">
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+
+		<Operation
+			Sql="select count(1) allrs,ceil(count(1)/to_number(:limit)) ys,:start beg,:limit limit from 
+						  ( 
+				select title, content, intime, pid ,nid from tb_news a order by a.intime) 
+				 ">
+			<Field DefaultValue="1">start</Field>
+			<Field DefaultValue="10">limit</Field>
+
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>
+					/list_news.jsp
+				</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	
+	<Handle UID="gotoaddnews">
+		<Operation Sql="select 1 from dual ;">
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/input_news.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="doadd">
+		<Operation
+			Sql="insert into tb_news
+  (title,content, intime, pid, nid)
+values
+  (:title, :content, sysdate,:pid, :nid);
+">
+			<Field Sequences="id">nid</Field>
+			<Field>title</Field>
+			<Field>content</Field>
+			<Field SValue="pid">pid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<!--<Url>/mainservlet?fid=car.xml@gotolist</Url>
+			-->
+				<Url></Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+		</Handle>
+	
+	<Handle UID="gotoupdate">
+		<Operation
+			Sql="select title, content,nid from tb_news where nid=:nid ;">
+			<Field>nid</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/updateinput_news.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="doupdate">
+		<Operation Sql="update tb_news set title=:title ,content=:content   where nid=:nid">
+		<Field >nid</Field>
+		<Field >title</Field>
+		<Field >content</Field>
+		
+		</Operation>
+	
+	<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/mainservlet?fid=user.xml@gotolistnews</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+
+</Content>

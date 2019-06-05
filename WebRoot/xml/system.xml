@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		edited with XML Spy v4.4 U (http://www.xmlspy.com) by Wenyongjun
+		(Tianjin.Xuntong.LTD)
+	-->
+<!DOCTYPE Content SYSTEM "..\globe\struct\dtd\xml.dtd">
+<Content>
+<Handle UID="getcode">
+		<Operation
+			Sql="select code_id,code_name,a.prop_a,a.ordernumber,a.sup_code_id,a.code_number,a.remark from tb_codeinfo a where 
+(ifnull(sup_code_id,'1')=:supid or sup_code_id='') and code_type=:codetype order by a.intime">
+         <Field DefaultValue="1">supid</Field>
+         <Field>codetype</Field>
+		</Operation> 
+ <Operation Sql="select a.code_id,a.code_name,a.prop_a,a.ordernumber,a.sup_code_id,a.code_number from tb_codeinfo a
+where a.code_id=:supid  and code_type=:codetype ">
+
+<Field>supid</Field>
+<Field>codetype</Field>
+ </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<!-- 获取代码树 -->
+	<Handle UID="getcodetree">
+		<Operation
+			Sql="select code_id,code_name
+from tb_codeinfo c where FIND_IN_SET(c.code_id, queryChildcode(:supid)) and code_type=:codetype order by code_id">
+         <Field DefaultValue="1">supid</Field>
+         <Field>codetype</Field>
+		</Operation> 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<Handle UID="getorg">
+		
+		<Operation Sql="
+			SELECT 
+				(select userid from employee_info where dept=o.orgid limit 1) userid,
+				o.*
+			FROM org o WHERE suporgid=:suporgid and :orgname and :orgflag ">
+		    <Field DefaultValue="syslead">suporgid</Field>
+		    <Field QueryValue="orgname like format_like(:orgname)">orgname</Field>
+		    <Field QueryValue="orgflag = :orgflag">orgflag</Field>
+		</Operation>
+		
+		<Operation
+			Sql="select orgid,orgname,suporgid from org where orgid=:suporgid">
+         	<Field DefaultValue="syslead">suporgid</Field>
+		</Operation> 
+
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="getmenu">
+		<Operation Sql=" SELECt ifnull(a.load_page,'0') load_page,a.funcid,a.funcname  FROM  functionlist a  where 
+ funcid in (      select getsupfuncid(b.funcid,:supid) from tb_rolefuns t inner join functionlist b on t.funcid=b.funcid where t.rid in  
+       (select rid from tb_emprole where pid=:pid ) and b.ftype in ('2','3') )        ORDER BY a.funcid" >
+			<Field SValue="pid" >pid</Field>
+			<Field DefaultValue="1">supid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="getpriv">
+		<Operation Sql="select getpriv('1',:rid) as privstr from dual" >
+
+			<Field>rid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<Handle UID="getprivbypid">
+		<Operation Sql="select getprivbypid(:supid,:rid) as privstr from dual" >
+            <Field DefaultValue="101">supid</Field>
+			<Field SValue="pid">rid</Field>
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="userlist">
+				<Operation
+			Sql="
+        select * from (select 
+		 userid, username, sex, dept, age, position, cardid,  (select orgname from org where orgid=dept) orgname,
+        type, eid, pid, email, telephone, phone, fax, passwords, resdate,pactive status,
+        case when pactive='1' then '禁止登陆' else '正常' end statusname
+        ,(select max(a.rname) from tb_rolelist a ,tb_emprole b where a.rid=b.rid and b.pid=t.pid) rname
+         from employee_info t where :username and :dept and :telephone order by dept) t limit :start,:limit
+        ">
+      <Field QueryValue="username like format_like(:username)" >username</Field>
+        <Field QueryValue="telephone=:telephone" >telephone</Field>	
+         <Field QueryValue="dept=:dept" >dept</Field>	
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation> 
+
+	<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	  from employee_info where :username and :dept and :telephone ) a
+
+				 ">
+      <Field QueryValue="username like format_like(:username)" >username</Field>
+      <Field QueryValue="telephone=:telephone" >telephone</Field>	
+  <Field QueryValue="dept=:dept" >dept</Field>				
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="useradd">
+		<Operation
+			Sql="insert into employee_info
+  (userid,username,sex,age,dept,type,email,telephone,fax,resdate,cardid  ,pid   ,passwords,position)
+values
+  (:userid, :username, :sex, :age,:orgid, '', :email,:telephone,:fax,now(),:cardid,:pid,:passwords,:position)">
+			<Field>userid</Field>
+			<Field>cardid</Field>
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field DefaultValue="0">age</Field>
+			<Field>orgid</Field>
+			<Field>email</Field>
+			<Field>telephone</Field>
+			<Field Encrypt="true">passwords</Field>
+			<Field>fax</Field>
+			<Field Sequences="pid">pid</Field>
+			<Field>position</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+		<Handle UID="userinfo">
+		<Operation Sql="select userid, username, sex, dept, age, position, cardid,  (select orgname from org where orgid=dept) orgname,
+        type, eid, pid, email, telephone, phone, fax,case position when '1' then '部门负责' else '普通员工' end as positionname from employee_info where pid=:pid">
+			<Field >pid</Field>
+		</Operation>
+		<Operation
+			Sql="select orgid ,CONCAT(getorgprefix(orgid),orgname)  orgname from org where orgid!='syslead' order by dept_sort;">
+
+		</Operation>
+		
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="usermod">
+		<Operation
+			Sql="update employee_info set username=:username,sex=:sex,age=:age,
+			email=:email,telephone=:telephone ,passwords=:passwords,dept=:orgid where pid=:pid">
+			
+            <Field>pid</Field>
+			<Field>username</Field>
+			<Field>sex</Field>
+			<Field>age</Field>
+			<Field>orgid</Field>
+			<Field>email</Field>
+			<Field>telephone</Field>
+
+			<Field>fax</Field>
+			<Field Encrypt="true">passwords</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="deluser">
+
+		<Operation Sql="delete from employee_info where pid=:pid">
+			<Field>pid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+	<Handle UID="userrole">
+		<!-- 员工所有权限 -->
+		<Operation
+			Sql="select a.rid,a.rname,b.pid from tb_rolelist a left join tb_emprole b on a.rid=b.rid and b.pid=:pid">
+			<Field>pid</Field>
+		</Operation>
+
+		<Operation
+			Sql="select userid,username,pid from employee_info where pid =:pid">
+			<Field>pid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<Handle UID="userrolemod">
+		<Operation Sql="delete from tb_emprole where pid=:pid">
+			<Field>pid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_emprole(pid, rid) values(:pid,:rid);">
+			<Field>pid</Field>
+			<Field>rid</Field>
+		</Operation>
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	<Handle UID="rolelist">
+		<Operation
+			Sql="
+			 select * from (select 
+rid, rname, intime, pid, (select count(funcid) from tb_rolefuns where rid=a.rid ) countf,(select count(pid) from tb_emprole where rid=a.rid ) countp 
+from tb_rolelist a order by a.intime) t limit :start,:limit 
+">
+   
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+			
+		</Operation>
+
+		<Operation
+			Sql="
+			select allrs,ys,beg,limit1 from (select count(1) allrs,CAST(ceil(count(1)/conv(:limit,'10','10')) AS CHAR) ys,CAST(ceil(((:start)+(:limit))/(:limit)) AS CHAR) beg,:limit limit1
+	  from  tb_rolelist ) t
+">
+				
+			<Field DefaultValue="0">start</Field>
+			<Field DefaultValue="10">limit</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="roleinfo">
+		<!-- 角色所有权限 -->
+
+
+
+		<!-- 查看角色姓名 -->
+		<Operation
+			Sql="select rid,rname from tb_rolelist where rid =:rid">
+			<Field>rid</Field>
+		</Operation>
+				<Operation
+			Sql="select * from tb_rolefuns where rid=:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Operation
+			Sql="select * from tb_roleorgs where rid=:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<Handle UID="newrole">
+		<Operation Sql="insert into tb_rolelist(rid,rname,intime,pid) values(:rid,:rname,now(),:pid)">
+			<Field Sequences="rid">rid</Field>
+			<Field SValue="pid">pid</Field>
+			<Field>rname</Field>
+		</Operation>
+
+		<Operation Sql="delete from tb_rolefuns where rid=:rid">
+			<Field OtherOperation="operation1">rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_rolefuns(rid, funcid) values(:rid,:funcsubid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">funcsubid</Field>
+		</Operation>
+		
+		<Operation Sql="delete from tb_roleorgs where rid=:rid">
+			<Field OtherOperation="operation1">rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_roleorgs(rid, orgid) values(:rid,:orgid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">orgid</Field>
+		</Operation>
+		
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<!-- <Url>/list_user.jsp</Url> -->
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+	
+		<Handle UID="rolemode">
+		<Operation Sql="update tb_rolelist set rname=:rname,intime=now(),pid=:pid where rid=:rid">
+			<Field>rid</Field>
+			<Field SValue="pid">pid</Field>
+			<Field>rname</Field>
+		</Operation>
+
+		<Operation Sql="delete from tb_rolefuns where rid=:rid">
+			<Field>rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_rolefuns(rid, funcid) values(:rid,:funcsubid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">funcsubid</Field>
+		</Operation>
+		
+		<Operation Sql="delete from tb_roleorgs where rid=:rid">
+			<Field OtherOperation="operation1">rid</Field>
+		</Operation>
+		<Operation
+			Sql="insert into tb_roleorgs(rid, orgid) values(:rid,:orgid);">
+			<Field OtherOperation="operation1">rid</Field>
+			<Field DefaultValue="null">orgid</Field>
+		</Operation>
+
+		<Other>
+			<SuccessMsg></SuccessMsg>
+			<SuccessPage>
+				<!-- <Url>/list_user.jsp</Url> -->
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>
+<!-- 新增机构 -->
+	<Handle UID="insorg">
+ 		<Operation Sql="INSERT INTO org
+						(
+							orgid,
+							orgname,
+							intime,
+							status,
+							suporgid,
+							remark,
+							dept_sort,
+							orgflag,
+							uaddress,
+							manager,
+							managertel,
+							leader,
+							leadertel
+						)
+						VALUES
+						(
+							:orgid,
+							:orgname,
+							NOW(),
+							'1',
+							:suporgid,
+							:remark,
+							:dept_sort,
+							:orgflag,
+							:uaddress,
+							:manager,
+							:managertel,
+							:leader,
+							:leadertel
+						)">
+		         <Field Sequences="orgid">orgid</Field>
+		         <Field>orgname</Field>
+		         <Field>suporgid</Field>
+		         <Field DefaultValue="">remark</Field>
+		         <Field DefaultValue="9999">dept_sort</Field>
+		         <Field>orgflag</Field>
+		         <Field>uaddress</Field>
+		         <Field>manager</Field>
+		         <Field>managertel</Field>
+		         <Field>leader</Field>
+		         <Field>leadertel</Field>
+		</Operation>
+ 
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+               <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+
+
+<!-- 新增机构（不新建用户） -->
+	<Handle UID="insorgnouser">
+ 		<Operation Sql="INSERT INTO org
+						(
+							orgid,
+							orgname,
+							intime,
+							status,
+							suporgid,
+							remark,
+							dept_sort,
+							orgflag,
+							uaddress,
+							manager,
+							managertel,
+							leader,
+							leadertel
+						)
+						VALUES
+						(
+							:orgid,
+							:orgname,
+							NOW(),
+							'1',
+							:suporgid,
+							:remark,
+							:dept_sort,
+							:orglfag,
+							:uaddress,
+							:manager,
+							:managertel,
+							:leader,
+							:leadertel
+						)">
+		         <Field Sequences="orgid">orgid</Field>
+		         <Field>orgname</Field>
+		         <Field>suporgid</Field>
+		         <Field DefaultValue="">remark</Field>
+		         <Field DefaultValue="9999">dept_sort</Field>
+		         <Field>orgflag</Field>
+		         <Field>uaddress</Field>
+		         <Field>manager</Field>
+		         <Field>managertel</Field>
+		         <Field>leader</Field>
+		         <Field>leadertel</Field>
+		</Operation>
+		
+ 
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+               <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+
+	<Handle UID="delorg">
+		
+		<Operation Sql="call p_delorg(:orgid);">
+		         <Field>orgid</Field>
+		</Operation>
+
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="delrole">
+<Operation Sql="delete from tb_rolefuns a where a.rid=:rid">
+<Field>rid</Field>
+ </Operation>
+ <Operation Sql="delete from tb_emprole b where b.rid=:rid">
+
+<Field>rid</Field>
+ </Operation>
+  <Operation Sql="delete from tb_rolelist a where a.rid=:rid">
+
+<Field>rid</Field>
+ </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+<Handle UID="vieworg">
+	
+	<Operation Sql="select * from org where orgid=:orgid">
+		<Field>orgid</Field>
+	</Operation>
+ 
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<Handle UID="modorg">
+
+		<Operation Sql="update org set
+							orgname=:orgname,
+							remark=:remark,
+							dept_sort=:dept_sort,
+							uaddress=:uaddress,
+							orgflag=:orgflag,
+							manager=:manager,
+							managertel=:managertel,
+							leader=:leader,
+							leadertel=:leadertel
+						where orgid=:orgid">
+		         <Field>orgname</Field>
+		         <Field DefaultValue="">remark</Field>
+		         <Field DefaultValue="9999">dept_sort</Field>
+		         <Field>uaddress</Field>
+		         <Field>orgflag</Field>
+		         <Field>manager</Field>
+		         <Field>managertel</Field>
+		         <Field>leader</Field>
+		         <Field>leadertel</Field>
+		         <Field>orgid</Field>
+		</Operation>
+
+
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+			<Url>/data_json.jsp</Url>
+				
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+<Handle UID="delcode">
+<Operation Sql="select 1 from tb_codeinfo where sup_code_id=:code_id and code_type=:codetype" ExpectRows="0" ExpectFaultMsg="该代码有下级代码，不能删除！">
+<Field >sup_code_id</Field>
+<Field>code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ <Operation Sql="delete from tb_codeinfo where code_id=:code_id and code_type=:codetype">
+<Field>code_id</Field>
+<Field>sup_code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	
+	<Handle UID="inscode">
+<Operation Sql="insert into tb_codeinfo
+  (code_type,code_id, code_name, eid, prop_a, active, sup_code_id,ordernumber,code_number)
+values
+  (:codetype,:code_id, :code_name, '', :prop_a, '', :sup_code_id, :ordernumber,:code_number)">
+  <Field>codetype</Field>
+<Field>code_id</Field>
+<Field DefaultValue="1">sup_code_id</Field>
+<Field>code_name</Field>
+<Field>prop_a</Field>
+<Field DefaultValue="0">ordernumber</Field>
+<Field>code_number</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="viewcode">
+<Operation Sql="select code_type, code_id, code_name, eid, prop_a, active, sup_code_id, ordernumber,code_number,
+(select typename from tb_codetype where typeid=a.code_type) typename,
+(select code_name from tb_codeinfo where code_id=a.sup_code_id and code_type=:codetype) supcodename from tb_codeinfo a where code_id=:code_id and code_type=:codetype">
+<Field>code_id</Field>
+<Field>codetype</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+	<Handle UID="modcode">
+<Operation Sql="update tb_codeinfo set code_id=:code_id, code_name=:code_name,prop_a=:prop_a,ordernumber=:ordernumber,code_number=:code_number where code_id=:code_id and code_type=:codetype">
+<Field>code_name</Field>
+<Field>prop_a</Field>
+<Field>code_id</Field>
+<Field  DefaultValue="0">ordernumber</Field>
+<Field>codetype</Field>
+<Field>sup_code_id</Field>
+<Field>code_number</Field>
+ </Operation>
+ 		<Other>
+			<FaultMsg></FaultMsg>
+			<SuccessPage>
+            <Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<FaultPage>
+			  <Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>	
+		<Handle UID="codetypelist">
+		<Operation
+			Sql="select * from tb_codetype">
+		</Operation> 
+		<Other>
+			<FaultMsg></FaultMsg>
+			<!-- 成功页面 -->
+			<SuccessPage>
+				<Url>/data_json.jsp</Url>
+			</SuccessPage>
+			<!-- 失败页面 -->
+			<FaultPage>
+				<Url></Url>
+			</FaultPage>
+		</Other>
+	</Handle>		
+</Content>

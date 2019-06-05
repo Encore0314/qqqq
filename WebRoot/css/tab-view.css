@@ -1,0 +1,64 @@
+.dhtmlgoodies_tabPane{
+		height:35px;	
+	}
+	.dhtmlgoodies_aTab{
+		background:#f1f4f5;
+		font:"Microsoft YaHei";
+		font-size:14px;
+		font-weight:400;
+		
+	}
+	.dhtmlgoodies_tabPane DIV{
+		font-size:14px;
+		float:left;
+		height:35px;	/* Height of tabs */
+		padding-left:3px;
+		vertical-align:middle;
+		background-repeat:no-repeat;
+		background-position:bottom left;
+		cursor:pointer;
+		position:relative;
+		margin-left:0px;
+		margin-right:0px;
+		
+	}
+	.dhtmlgoodies_tabPane .tabActive{
+		background:#f1f4f5;/*¡¥Ω”◊¥Ã¨±Í«©±≥æ∞—’…´*/
+		margin-right:5px;
+		
+		/*border-top:1px solid #cccfd0;*/
+		z-index:10;	
+	}
+	.dhtmlgoodies_tabPane .tabInactive{
+		margin-right:3px;
+		font-weight:400;
+		background:#fff;
+
+		color:#919191;
+		margin-right:10px;
+		z-index:1;
+	}
+
+	.dhtmlgoodies_tabPane .inactiveTabOver{
+		background:#fff;/* Û±Í‘⁄…œ∑Ω±Í«©±≥æ∞—’…´*/
+		opcity:0.8;
+		color:#333;
+		margin-right:10px;
+	}
+	.dhtmlgoodies_tabPane span{
+		font:"Œ¢»Ì—≈∫⁄";
+		font-size:14px;
+		text-align:center;	
+		line-height:35px;
+	}
+	.dhtmlgoodies_tabPane .tabActive span{
+		font:"Œ¢»Ì—≈∫⁄";
+		font-size:14px;
+		font-weight:400;
+		text-align:center;	
+		line-height:35px;
+	}
+	
+	.dhtmlgoodies_tabPane img{
+		float:left;
+	}

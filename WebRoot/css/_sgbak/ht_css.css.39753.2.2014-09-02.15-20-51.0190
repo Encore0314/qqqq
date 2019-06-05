@@ -1,0 +1,95 @@
+@charset "utf-8";
+/* CSS Document */
+
+/***********************字体定义*********************************/
+
+.font_white {
+	font-size:14px;
+	color:#FFF;  
+}
+.font_white2 {
+	font-size:16px;
+	color:#FFF;  
+}
+.font_title{
+	font-size:14px; 
+	font-weight: bold;
+}
+.font_title2{
+	font-size:16px; 
+	font-weight: bold;
+}
+.font_blue{
+	color:#43B8EE;
+	
+	}
+.font_black{
+	font-size:14px;
+	}
+.font_gray {
+  font-size: 14px;
+  color: rgb( 180, 180, 180 );
+}
+
+/***********************end*********************************/
+
+
+/***********************链接定义*********************************/
+
+a.link_st01{
+	display:inline;
+	}
+	
+a.link_st01:link{
+	color:#FFF;
+	
+	}
+a.link_st01:visited{
+	color:#333;
+	
+	}
+	
+a.link_st01:hover{
+	text-decoration:underline;
+	
+	}
+	
+a.link_left{
+	display:block;
+	font-size:16px;
+	text-align:center;
+	height:45px;
+	line-height:45px;	
+	border-bottom:1px solid #E1F0FD;
+	}
+	
+
+	
+a.link_left:link{
+	color: rgb( 184, 184, 184 );
+	}
+	
+a.link_left:visited{
+	 color: rgb( 27, 27, 27 );
+	
+	}
+	
+a.link_left:hover{
+	color: rgb( 27, 27, 27 );
+	}
+	
+	
+/***************按钮定义******************/
+
+button{
+	width:100px;
+	height:30px;
+	border: 1px solid #f66001;
+	color:#FFF;
+	font-size:14px;
+	font-weight:600;
+	cursor:pointer;
+	background:#f76d15;
+	-webkit-border-radius:4px;
+	
+	}

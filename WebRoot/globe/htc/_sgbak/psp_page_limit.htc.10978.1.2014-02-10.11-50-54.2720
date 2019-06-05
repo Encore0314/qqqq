@@ -1,0 +1,100 @@
+<PUBLIC:COMPONENT>
+<PUBLIC:PROPERTY NAME="psp_limit" INTERNALNAME="gp_limit" />
+<PUBLIC:PROPERTY NAME="psp_show" INTERNALNAME="gp_show" />
+<PUBLIC:PROPERTY NAME="curr_page" INTERNALNAME="c_page" />
+<PUBLIC:METHOD NAME="psp_list_display" INTERNALNAME="list_display" />
+<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="init()" />
+
+
+<SCRIPT LANGUAGE="JScript"> 
+
+var gp_page;	//当前页数
+var gp_limit;	//每页条数
+var gp_show;	//显示页码的div名称
+//var c_page;
+
+function init()
+{
+
+	//整个tbody不显示
+	element.tBodies(0).runtimeStyle.display = "none";
+	c_page=postForm.current_page.value;
+	
+	//显示第一页
+	list_display(c_page);
+		
+}
+
+//将tbody中的所有tr的display设为不显示
+function display_none()
+{
+	element.tBodies(0).runtimeStyle.display = "";
+
+	for (i=0;i<element.tBodies(0).rows.length;i++)
+	{
+	 element.tBodies(0).rows(i).runtimeStyle.display = "none";
+	}	
+}
+
+//根据需要显示的页数，将tr的display设为显示
+function list_display(gp_page)
+{ 
+	var v_end = gp_page * gp_limit; //当前页结束条数
+	var v_start; //当前页开始条数
+
+	if (gp_page == 1)
+		 v_start = 1;
+	else 
+		 v_start = v_end - gp_limit + 1;
+
+	display_none();
+
+	for (i=v_start;i<=v_end;i++)
+	{
+		if (element.tBodies(0).rows(i-1))
+			element.tBodies(0).rows(i-1).runtimeStyle.display = "";
+	}
+	
+	output(gp_page);
+}
+
+
+//页码输出
+function output(gp_page)
+{
+	var v_last = parseInt(gp_page) - 1;
+	var v_next = parseInt(gp_page) + 1;
+	var v_lastly = Math.ceil(t_limit.tBodies(0).rows.length/gp_limit);
+	var v_str = "<a onclick='" + element.id + ".psp_list_display(vv);'" + " style='cursor:hand;'>pp</a>";
+
+	if (gp_page == 1)
+	{
+		v_first = "第一页";
+		v_last = "上一页";
+	}
+	else
+	{
+		v_first = (v_str.replace('vv',1)).replace('pp','第一页');
+		v_last = (v_str.replace('vv',v_last)).replace('pp','上一页');
+	}
+
+	if (v_lastly == gp_page)
+	{
+		v_next = "下一页";
+		v_lastly = "最后一页";
+	}
+	else
+	{
+		v_next = (v_str.replace('vv',v_next)).replace('pp','下一页');
+		v_lastly = (v_str.replace('vv',v_lastly)).replace('pp','最后一页');
+	}
+	var total_page=Math.ceil(element.tBodies(0).rows.length/gp_limit);
+	if(total_page==0)
+	total_page=1;
+	eval(gp_show).innerHTML="<br/>[第" + gp_page + "页/共" + total_page + "页]&nbsp;&nbsp;" + v_first + "|" + v_last + "|" + v_next + "|" + v_lastly;
+	 postForm.current_page.value=gp_page;
+	
+}
+
+</SCRIPT>
+</PUBLIC:COMPONENT>

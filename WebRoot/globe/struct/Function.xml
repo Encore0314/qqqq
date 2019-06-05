@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content>
+	<Function>
+		<FunctionId>F00.01.00.01</FunctionId>
+		<ActionName>com.arch.bussiness.SaveEnrollAction</ActionName>
+		<SuccessPage></SuccessPage>
+		<FaultPage></FaultPage>
+	</Function>
+</Content>

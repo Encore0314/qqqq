@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+ <display-name>Web</display-name>
+  <filter>
+    <filter-name>HeadFilter</filter-name>
+    <filter-class>com.arch.webcontroller.HeadFilter</filter-class>
+    <init-param>
+      <param-name>FTIME</param-name>
+      <param-value>250</param-value>
+    </init-param>    
+    <init-param>
+      <param-name>FINTERVAL</param-name>
+      <param-value>20000</param-value>
+    </init-param> 
+  </filter>
+ <filter>
+  <filter-name>SaftyFilter</filter-name>
+  <filter-class>com.arch.webcontroller.SaftyFilter</filter-class>
+  <init-param>
+   <param-name>FilterFile</param-name>
+   <param-value>login.jsp;image.jsp;struct_fault.jsp;struct_success.jsp;upload.jsp;upload2.jsp;getps.jsp;logout.jsp;imageshow.jsp;carimgshow.jsp;index.jsp;</param-value>
+  </init-param>
+  <init-param> 
+   <param-name>FilterFid</param-name>
+   <param-value>login.xml@f100;login.xml@f200;login.xml@f201;</param-value>
+  </init-param>   
+  <init-param> 
+   <param-name>ONOFF</param-name>
+   <param-value>on</param-value>
+  </init-param>
+
+ </filter>
+ <filter-mapping>
+  <filter-name>HeadFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+ </filter-mapping>
+ <filter-mapping>
+  <filter-name>SaftyFilter</filter-name>
+  <url-pattern>/mainservlet</url-pattern>
+ </filter-mapping>
+ <filter-mapping>
+  <filter-name>SaftyFilter</filter-name>
+  <url-pattern>*.jsp</url-pattern>
+ </filter-mapping>
+ <servlet>
+  <servlet-name>mainservlet</servlet-name>
+  <servlet-class>com.arch.webcontroller.MainServlet</servlet-class>
+  <load-on-startup>2</load-on-startup>
+ </servlet>
+ <servlet>
+  <servlet-name>viewdispatchservlet</servlet-name>
+  <servlet-class>com.arch.webcontroller.ViewDispatchServlet</servlet-class>
+  <load-on-startup>3</load-on-startup>
+ </servlet>
+
+ <servlet>
+  <servlet-name>globalservlet</servlet-name>
+  <servlet-class>com.arch.util.GlobalServlet</servlet-class>
+  <init-param>
+   <param-name>JNDI</param-name>
+   <param-value>java:comp/env/jdbc/woocms</param-value>
+  </init-param>
+  <init-param>
+   <param-name>BASE_DIRECTORY</param-name>
+   <param-value>/</param-value>
+  </init-param>
+  <init-param>
+   <param-name>MAC_STS</param-name>
+   <param-value>0</param-value>
+  </init-param>
+  <init-param>
+   <param-name>VERSION</param-name>
+   <param-value>alpha1.0</param-value>
+  </init-param>
+  <init-param>
+   <param-name>CANWRITE</param-name>
+   <param-value>true</param-value>
+  </init-param>
+  <init-param>
+   <param-name>FORMACTION</param-name>
+   <param-value>mainservlet</param-value>
+  </init-param>
+  <init-param>
+   <param-name>CHARSET</param-name>
+   <param-value>UTF-8</param-value>
+  </init-param>
+  <init-param>
+    <param-name>LOGWRITE</param-name>
+    <param-value>true</param-value>
+  </init-param>
+  <init-param>
+   <param-name>DBTYPE</param-name>
+   <param-value>MSSQL</param-value>
+  </init-param>
+  <init-param>
+   <param-name>UPLOAD_PATH_TEMP</param-name>
+   <param-value>c:\\temp\\</param-value>
+  </init-param>
+  <init-param>
+   <param-name>UPLOAD_PATH</param-name>
+   <param-value>D:\\Workspaces\\cultrue\\WebRoot\\img</param-value>
+  </init-param>  
+    <init-param>
+   <param-name>Fsql</param-name>
+   <param-value>select load_page as loadpage  from functionlist
+ where funcid in (select t.funcid from functionlist t
+                 left join 
+(select a.funcid from tb_rolefuns a,tb_emprole b where a.rid=b.rid and b.pid=#pid#) t1 on t.funcid=t1.funcid
+where t1.funcid is null) and load_page is not null</param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>mainservlet</servlet-name>
+  <url-pattern>/mainservlet</url-pattern>
+ </servlet-mapping>
+
+ <servlet-mapping>
+  <servlet-name>viewdispatchservlet</servlet-name>
+  <url-pattern>/viewdispatchservlet</url-pattern>
+ </servlet-mapping>
+
+ <welcome-file-list>
+  <welcome-file>login.jsp</welcome-file>
+ </welcome-file-list>
+ <login-config>
+  <auth-method>BASIC</auth-method>
+ </login-config>
+</web-app>
