@@ -176,8 +176,9 @@ try{
 				
 					p_worgid=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 1);
 					p_worgname=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 2);
-					p_uname=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 3);
-					p_uid=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 5);
+					p_uid=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 3);
+					p_uname=	ExcelUtil.getMergedRegionValueNotRow(xssfSheet, rowNum, 4);
+					
 					
 					
 				    
